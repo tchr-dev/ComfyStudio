@@ -1,4 +1,5 @@
 import * as StableStudio from "@stability/stablestudio-plugin";
+import * as StableStudioPluginComfyUI from "@stability/stablestudio-plugin-comfyui";
 import * as StableStudioPluginExample from "@stability/stablestudio-plugin-example";
 import * as StableStudioPluginStability from "@stability/stablestudio-plugin-stability";
 import * as StableStudioPluginWebUI from "@stability/stablestudio-plugin-webui";
@@ -118,6 +119,8 @@ namespace State {
         ? StableStudioPluginExample
         : Environment.get("USE_WEBUI_PLUGIN") === "true"
         ? StableStudioPluginWebUI
+        : Environment.get("USE_COMFYUI_PLUGIN") === "true"
+        ? StableStudioPluginComfyUI
         : StableStudioPluginStability;
 
     return {

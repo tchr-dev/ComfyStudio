@@ -1131,6 +1131,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@stability/stablestudio-plugin-comfyui@workspace:^, @stability/stablestudio-plugin-comfyui@workspace:packages/stablestudio-plugin-comfyui":
+  version: 0.0.0-use.local
+  resolution: "@stability/stablestudio-plugin-comfyui@workspace:packages/stablestudio-plugin-comfyui"
+  dependencies:
+    "@stability/stablestudio-plugin": "workspace:^"
+    "@typescript-eslint/eslint-plugin": ^5.33.1
+    "@typescript-eslint/parser": ^5.33.1
+    eslint: 8.22.0
+    eslint-config-prettier: ^8.5.0
+    eslint-plugin-import: ^2.26.0
+    eslint-plugin-markdown: ^3.0.0
+    eslint-plugin-prettier: ^4.2.1
+    eslint-plugin-react: ^7.30.1
+    eslint-plugin-react-hooks: ^4.6.0
+    nodemon: ^2.0.20
+    prettier: ^2.7.1
+    rimraf: ^3.0.2
+    ts-node: ^10.9.1
+    tsx: ^3.12.1
+    ttypescript: ^1.5.13
+    typescript: 4.8.4
+    typescript-transform-paths: ^3.4.4
+  languageName: unknown
+  linkType: soft
+
 "@stability/stablestudio-plugin-example@workspace:^, @stability/stablestudio-plugin-example@workspace:packages/stablestudio-plugin-example":
   version: 0.0.0-use.local
   resolution: "@stability/stablestudio-plugin-example@workspace:packages/stablestudio-plugin-example"
@@ -1212,7 +1237,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@stability/stablestudio-plugin-webui@workspace:packages/stablestudio-plugin-webui":
+"@stability/stablestudio-plugin-webui@workspace:^, @stability/stablestudio-plugin-webui@workspace:packages/stablestudio-plugin-webui":
   version: 0.0.0-use.local
   resolution: "@stability/stablestudio-plugin-webui@workspace:packages/stablestudio-plugin-webui"
   dependencies:
@@ -1272,8 +1297,10 @@ __metadata:
     "@react-hook/resize-observer": ^1.2.6
     "@reecelucas/react-use-hotkeys": ^2.0.0
     "@stability/stablestudio-plugin": "workspace:^"
+    "@stability/stablestudio-plugin-comfyui": "workspace:^"
     "@stability/stablestudio-plugin-example": "workspace:^"
     "@stability/stablestudio-plugin-stability": "workspace:^"
+    "@stability/stablestudio-plugin-webui": "workspace:^"
     "@tailwindcss/typography": ^0.5.9
     "@tanstack/react-query": ^4.22.0
     "@tanstack/react-query-devtools": ^4.22.0
@@ -2229,9 +2256,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001449, caniuse-lite@npm:^1.0.30001464":
-  version: 1.0.30001482
-  resolution: "caniuse-lite@npm:1.0.30001482"
-  checksum: a5f7681c860a29736f29350ebd81041c40b6aa7b2f94c50ed27284a0507e46dc79536dcfc05432504cfc80a0bf2070e4ad6fa704a9c0f3f32d47bed9059e98c2
+  version: 1.0.30001766
+  resolution: "caniuse-lite@npm:1.0.30001766"
+  checksum: 7a40e84cf1d7c9ee7a386bd68d946cd62a95aa62923d9224998bb09db81cb5a8e9c561920776c370f9afe50f364c10d50e987e747224357ef628cb96133b3763
   languageName: node
   linkType: hard
 
