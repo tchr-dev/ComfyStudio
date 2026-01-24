@@ -4,11 +4,11 @@
 <img src="./misc/GenerateScreenshot.png" style="width: 400px; max-width: 600px; flex-grow: 1;" />
 <img src="./misc/EditScreenshot.png" style="width: 400px; max-width: 600px; flex-grow: 1;" />
 
-<h3>👋 Welcome to StableStudio, the open-source version of <a href="https://dreamstudio.ai" target="_blank">DreamStudio</a>!</h3>
+<h3>👋 Welcome to ComfyStudio, a ComfyUI-focused fork of <a href="https://github.com/Stability-AI/StableStudio" target="_blank">StableStudio</a>!</h3>
 
 **🗺 Contents – [🚀 Quick Start](#quick-start) · [ℹ️ About](#about) · [🙋 FAQ](#faq) · [🧑‍💻 Contributing](#contributing)**
 
-**📚 Documentation – [🎨 UI](./packages/stablestudio-ui/README.md) · [🔌 Plugins](./packages/stablestudio-plugin/README.md) · <a href="https://platform.stability.ai" target="_blank">⚡️ platform.stability.ai</a>**
+**📚 Documentation – [🎨 UI](./packages/comfystudio-ui/README.md) · [🔌 Plugins](./packages/comfystudio-plugin/README.md) · <a href="https://github.com/comfyanonymous/ComfyUI" target="_blank">⚡️ ComfyUI</a>**
 
 **🔗 Links – <a href="https://discord.com/channels/1002292111942635562/1108055793674227782" target="_blank">🎮 Discord</a> · <a href="https://dreamstudio.ai" target="_blank">🌈 DreamStudio</a> · <a href="https://github.com/Stability-AI/StableStudio/issues">🛟 Bugs & Support</a> · <a href="https://github.com/Stability-AI/StableStudio/discussions">💬 Discussion</a>**
 
@@ -34,14 +34,15 @@ yarn
 ```
 
 ```bash
-yarn dev
+# Starts both ComfyUI (if configured) and ComfyStudio
+yarn start
 ```
 
 _**That's it! 🎉**_
 
-StableStudio will be running at [localhost:3000](http://localhost:3000) by default.
+ComfyStudio will be running at [localhost:3000](http://localhost:3000) by default.
 
-> If you are using the default Stability API plugin, You'll need to have your [API key](https://platform.stability.ai/docs/getting-started/authentication) handy. Otherwise, you should be good to go!
+> Make sure your ComfyUI is installed and the `COMFYUI_PATH` environment variable is set if it's not in `~/srv/ComfyUI`.
 
 # <a id="about" href="#about">About</a>
 
@@ -49,23 +50,17 @@ StableStudio will be running at [localhost:3000](http://localhost:3000) by defau
   <img src="./misc/PainterWithRobot.png" style="flex-grow: 1; flex-shrink: 1;" />
 </div>
 
-StableStudio is [Stability AI](https://stability.ai)'s official open-source variant of [DreamStudio](https://www.dreamstudio.ai), our user interface for generative AI. It is a web-based application that allows users to create and edit generated images. We're not entirely sure where this project is going just yet, but we're excited to see what the community does with it!
+ComfyStudio is a fork of [StableStudio](https://github.com/Stability-AI/StableStudio) designed to be the best frontend for [ComfyUI](https://github.com/comfyanonymous/ComfyUI). It brings the polished user interface of DreamStudio to the powerful node-based backend of ComfyUI.
 
 # <a id="faq" href="#faq">FAQ</a>
 
-### What's the difference between StableStudio and [DreamStudio](https://dreamstudio.ai)?
+### What's the difference between ComfyStudio and StableStudio?
 
-_Not much!_ There are a few tweaks we made to make the project more community-friendly:
+ComfyStudio is pre-configured to work with ComfyUI out of the box. It uses the `comfystudio-plugin-comfyui` by default and includes scripts to manage the local ComfyUI server.
 
-- We removed [DreamStudio](https://dreamstudio.ai)-specific branding.
-
-- All "over-the-wire" API calls have been replaced by a [plugin system](./packages/stablestudio-plugin/README.md) which allows you to easily swap out the back-end.
-
-  - With a little bit of TypeScript, you can [create your own plugin](./packages/stablestudio-plugin/README.md) and use StableStudio with any back-end you want!
-
-- We removed Stability-specific account features such as billing, API key management, etc.
-
-  - These features are still available at [DreamStudio's account page](https://dreamstudio.ai/account).
+- **Default Local Inference**: We prioritize local execution via ComfyUI.
+- **Unified Startup**: One command to launch everything.
+- **Rebranded**: To avoid confusion with the official Stability AI project.
 
 ### Will [DreamStudio](https://dreamstudio.ai) still be supported?
 
@@ -79,7 +74,7 @@ _Yes!_ Stability's hosted deployment of StableStudio will remain [DreamStudio](h
 
 _**Community contributions are encouraged!**_
 
-**The UI package's [README](./packages/stablestudio-ui/README.md) is a great place to start.** Bug fixes, documentation, general clean-up, new features, etc. are all welcome.
+**The UI package's [README](./packages/comfystudio-ui/README.md) is a great place to start.** Bug fixes, documentation, general clean-up, new features, etc. are all welcome.
 
 Here are some useful links...
 
