@@ -3,6 +3,8 @@ import React from "react";
 import { GlobalState } from "~/GlobalState";
 import { Theme } from "~/Theme";
 
+import { Rail as EditToolRail } from "./Rail";
+
 export type EditToolDefinition = {
   id: "remove-bg" | "replace-bg";
   label: string;
@@ -36,4 +38,6 @@ export namespace EditTool {
     active: undefined,
     setActive: (active) => set({ active }),
   }));
+
+  export const Rail = EditToolRail;
 }

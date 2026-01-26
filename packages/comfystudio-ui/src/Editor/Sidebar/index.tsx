@@ -71,6 +71,7 @@ export function Sidebar() {
           </App.Sidebar.Tab.Button>
         )}
       >
+        <Editor.EditTool.Rail />
         <Editor.Tool.Sidebar.Section />
         {isDream && (
           <Generation.Image.Sidebar.Tab variant="editor" id={inputID} />
