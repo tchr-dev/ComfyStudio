@@ -1,10 +1,11 @@
+import { DockLayout } from "~/Dock/DockLayout";
 import { Router } from "~/Router";
 import { Shortcut } from "~/Shortcut";
 import { Theme } from "~/Theme";
 
 import { BottomBar } from "./BottomBar";
 import { Providers } from "./Providers";
-import { Sidebar, Sidebars } from "./Sidebar";
+import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
 
 export function App() {
@@ -16,13 +17,16 @@ export function App() {
         <div className="absolute top-0 left-0 flex h-screen w-screen flex-col text-white sm:overflow-x-auto">
           <Shortcut.Palette />
           <TopBar />
-          <Sidebars />
           <div className="flex min-h-0 grow overflow-auto sm:min-w-[1000px]">
-            <Sidebar position="left" />
+            <Sidebar position="left">
+              <DockLayout side="left" />
+            </Sidebar>
             <div className="shrink grow overflow-y-auto">
               <Router />
             </div>
-            <Sidebar position="right" />
+            <Sidebar position="right">
+              <DockLayout side="right" />
+            </Sidebar>
           </div>
           {isMobileDevice && <BottomBar />}
         </div>
