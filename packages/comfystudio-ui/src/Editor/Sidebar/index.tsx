@@ -1,7 +1,7 @@
 import { App } from "~/App";
+import { EditorToolPanel } from "~/Dock/Panels/EditorToolPanel";
 import { Editor } from "~/Editor";
 import { Generation } from "~/Generation";
-import { Router } from "~/Router";
 import { Theme } from "~/Theme";
 
 const tips = [
@@ -16,7 +16,6 @@ const tips = [
 ];
 
 export function Sidebar() {
-  const location = Router.useLocation();
   const selectedID = Editor.Selection.OnlyOne.use();
   const dreams = Editor.Entities.useType("dream") as Editor.Dream[];
   const [inputID, setInputID] = useState("");
@@ -37,58 +36,27 @@ export function Sidebar() {
     [dreams, selectedID]
   );
 
-  const bottom = selectedID && (
-    <App.Sidebar.Tab.Bottom>
-      <Generation.Image.Create.Button
-        id={inputID}
-        onIdleClick={() => createDream()}
-        fullWidth
-        disabled={
-          !inputID ||
-          generating ||
-          !(dreams.filter((d) => d.id === selectedID).length > 0)
-        }
-        loading={generating}
-      />
-    </App.Sidebar.Tab.Bottom>
-  );
-
   return (
     <>
-      <App.Sidebar.Tab.Set
-        name="Edit"
-        position="left"
-        route="/edit"
-        icon={Theme.Icon.Edit}
-        bottom={bottom}
-        enabled={
-          location.pathname.startsWith("/generate") ||
-          location.pathname.startsWith("/edit")
-        }
-        button={(props) => (
-          <App.Sidebar.Tab.Button {...props} onClick={props.onClick}>
-            Edit
-          </App.Sidebar.Tab.Button>
-        )}
-      >
-        <Editor.Tool.Sidebar.Section />
-        {isDream && (
-          <Generation.Image.Sidebar.Tab variant="editor" id={inputID} />
-        )}
-        {!isDream && selectedID && <Editor.Image.Sidebar.Tab id={selectedID} />}
-        {!selectedID && <EmptySidebar />}
-      </App.Sidebar.Tab.Set>
-      <App.Sidebar.Tab.Set
-        button={false}
-        route="/edit"
-        enabled={location.pathname.startsWith("/edit")}
-        defaultActive
-        name="Layers"
-        position="right"
-        icon={Theme.Icon.Layers}
-      >
-        <Editor.Entities.Sidebar.Section />
-      </App.Sidebar.Tab.Set>
+      <EditorToolPanel />
+      {isDream && <Generation.Image.Sidebar.Tab variant="editor" id={inputID} />}
+      {!isDream && selectedID && <Editor.Image.Sidebar.Tab id={selectedID} />}
+      {!selectedID && <EmptySidebar />}
+      {selectedID && (
+        <div className="mt-4">
+          <Generation.Image.Create.Button
+            id={inputID}
+            onIdleClick={() => createDream()}
+            fullWidth
+            disabled={
+              !inputID ||
+              generating ||
+              !(dreams.filter((d) => d.id === selectedID).length > 0)
+            }
+            loading={generating}
+          />
+        </div>
+      )}
     </>
   );
 }
