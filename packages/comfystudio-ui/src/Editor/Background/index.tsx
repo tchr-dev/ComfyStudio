@@ -3,7 +3,7 @@ import { Editor } from "~/Editor";
 export namespace Background {
   export const useSelectedImage = () => {
     const selectedID = Editor.Selection.OnlyOne.use();
-    const entities = Editor.Entities.use();
+    const entities = Editor.Entities.useMap();
     const image = useMemo(
       () =>
         selectedID
