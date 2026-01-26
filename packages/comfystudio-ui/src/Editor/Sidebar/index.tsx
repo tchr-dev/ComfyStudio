@@ -49,7 +49,7 @@ export function Sidebar() {
   const generationTabID = isReplaceBG ? effectiveInputID ?? "" : inputID;
   const bottomInputID = isReplaceBG ? effectiveInputID : inputID;
 
-  const bottom = selectedID && bottomInputID && (
+  const bottom = selectedID && bottomInputID && !isRemoveBG && (
     <App.Sidebar.Tab.Bottom>
       <Generation.Image.Create.Button
         id={bottomInputID}
