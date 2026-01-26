@@ -22,7 +22,6 @@ export function Sidebar() {
   const { active: activeEditTool } = Editor.EditTool.useActive();
   const { input: sessionInput } = Generation.Image.Session.useCurrentInput();
   const [inputID, setInputID] = useState("");
-  const createDream = Editor.Dream.Render.use(inputID);
 
   useEffect(() => {
     selectedID && setInputID(selectedID);
@@ -42,20 +41,24 @@ export function Sidebar() {
   const isReplaceBG = activeEditTool === "replace-bg";
   const selectedInput = Generation.Image.Input.get(inputID);
   const replaceInputID = selectedInput?.id ?? sessionInput?.id;
+  const effectiveInputID = isReplaceBG ? replaceInputID : inputID;
+  const createDream = Editor.Dream.Render.use(effectiveInputID ?? "");
   const showGenerationTab =
-    (isDream && !isRemoveBG) || (isReplaceBG && !!replaceInputID);
-  const generationTabID = isReplaceBG ? replaceInputID ?? "" : inputID;
+    (isDream && !isRemoveBG) ||
+    (isReplaceBG && !!selectedID && !!effectiveInputID);
+  const generationTabID = isReplaceBG ? effectiveInputID ?? "" : inputID;
+  const bottomInputID = isReplaceBG ? effectiveInputID : inputID;
 
-  const bottom = selectedID && (
+  const bottom = selectedID && bottomInputID && (
     <App.Sidebar.Tab.Bottom>
       <Generation.Image.Create.Button
-        id={inputID}
+        id={bottomInputID}
         onIdleClick={() => createDream()}
         fullWidth
         disabled={
-          !inputID ||
+          !bottomInputID ||
           generating ||
-          !(dreams.filter((d) => d.id === selectedID).length > 0)
+          (!isReplaceBG && !(dreams.filter((d) => d.id === selectedID).length > 0))
         }
         loading={generating}
       />
