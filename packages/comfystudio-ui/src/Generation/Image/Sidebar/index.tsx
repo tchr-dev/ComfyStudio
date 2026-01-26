@@ -1,9 +1,10 @@
 import { useLocation } from "react-router-dom";
 import { App } from "~/App";
+import { AdvancedPanel } from "~/Dock/Panels/AdvancedPanel";
+import { InputPanel } from "~/Dock/Panels/InputPanel";
+import { PromptPanel } from "~/Dock/Panels/PromptPanel";
 import { Generation } from "~/Generation";
 import { Theme } from "~/Theme";
-
-import { Advanced } from "./Advanced";
 
 export function Sidebar() {
   const { input } = Generation.Image.Session.useCurrentInput();
@@ -57,9 +58,9 @@ export namespace Sidebar {
             </div>
           </App.Sidebar.Section>
         )}
-        <Generation.Image.Prompt.Sidebar.Section id={id} />
+        <PromptPanel inputId={id} />
         {variant === "generate" && (
-          <Generation.Image.Input.Image.Sidebar.Section id={id} />
+          <InputPanel inputId={id} />
         )}
         <App.Sidebar.Section
           divider={false}
@@ -73,7 +74,7 @@ export namespace Sidebar {
             <Generation.Image.Count.Slider />
           </div>
         </App.Sidebar.Section>
-        {settingsOpen && <Advanced id={id} />}
+        {settingsOpen && <AdvancedPanel inputId={id} />}
       </>
     );
   }

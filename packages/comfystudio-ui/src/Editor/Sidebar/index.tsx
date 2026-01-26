@@ -1,4 +1,5 @@
 import { App } from "~/App";
+import { EditorToolPanel } from "~/Dock/Panels/EditorToolPanel";
 import { Editor } from "~/Editor";
 import { Generation } from "~/Generation";
 import { Router } from "~/Router";
@@ -71,7 +72,7 @@ export function Sidebar() {
           </App.Sidebar.Tab.Button>
         )}
       >
-        <Editor.Tool.Sidebar.Section />
+        <EditorToolPanel />
         {isDream && (
           <Generation.Image.Sidebar.Tab variant="editor" id={inputID} />
         )}
