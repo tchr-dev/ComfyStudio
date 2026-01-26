@@ -81,7 +81,9 @@ export function Sidebar() {
         )}
         {isRemoveBG && <RemoveBgAction />}
         {isReplaceBG && <ReplaceBgAction />}
-        {!isDream && selectedID && <Editor.Image.Sidebar.Tab id={selectedID} />}
+        {!isDream && !isRemoveBG && selectedID && (
+          <Editor.Image.Sidebar.Tab id={selectedID} />
+        )}
         {!selectedID && <EmptySidebar />}
       </App.Sidebar.Tab.Set>
       <App.Sidebar.Tab.Set

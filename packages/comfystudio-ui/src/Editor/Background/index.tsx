@@ -3,11 +3,13 @@ import { Editor } from "~/Editor";
 export namespace Background {
   export const useSelectedImage = () => {
     const selectedID = Editor.Selection.OnlyOne.use();
-    const entities = Editor.Entities.useMap();
+    const entities = Editor.Entities.use();
     const image = useMemo(
       () =>
         selectedID
-          ? (entities.get(selectedID) as Editor.Image | undefined)
+          ? (entities.find((entity) => entity.id === selectedID) as
+              | Editor.Image
+              | undefined)
           : undefined,
       [entities, selectedID]
     );
@@ -16,11 +18,11 @@ export namespace Background {
 
   export const useMockDuplicate = (label: string) => {
     const { image } = useSelectedImage();
-    const createImage = Editor.Image.Create.useFromURL();
+    const createImage = Editor.Image.Create.use();
 
     return useCallback(async () => {
       if (!image || !image.element?.src) return;
-      await createImage(image.element.src, {
+      await createImage({
         ...image,
         id: ID.create(),
         title: `${image.title ?? "Image"} (${label})`,
