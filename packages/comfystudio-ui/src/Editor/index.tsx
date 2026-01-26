@@ -6,6 +6,7 @@ import { Brush } from "./Brush";
 import { Camera } from "./Camera";
 import { Canvas } from "./Canvas";
 import { Dream } from "./Dream";
+import { EditTool } from "./EditTool";
 import { Entities, Entity } from "./Entity";
 import { Export } from "./Export";
 import { Floating } from "./Floating";
@@ -57,6 +58,7 @@ export declare namespace Editor {
     Camera,
     Canvas,
     Dream,
+    EditTool,
     Entities,
     Entity,
     Export,
@@ -80,6 +82,7 @@ export namespace Editor {
   Editor.Camera = Camera;
   Editor.Canvas = Canvas;
   Editor.Dream = Dream;
+  Editor.EditTool = EditTool;
   Editor.Entities = Entities;
   Editor.Entity = Entity;
   Editor.Export = Export;
