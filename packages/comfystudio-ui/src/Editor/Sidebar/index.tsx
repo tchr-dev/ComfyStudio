@@ -20,6 +20,7 @@ export function Sidebar() {
   const selectedID = Editor.Selection.OnlyOne.use();
   const dreams = Editor.Entities.useType("dream") as Editor.Dream[];
   const { active: activeEditTool } = Editor.EditTool.useActive();
+  const { input: sessionInput } = Generation.Image.Session.useCurrentInput();
   const [inputID, setInputID] = useState("");
   const createDream = Editor.Dream.Render.use(inputID);
 
@@ -39,6 +40,10 @@ export function Sidebar() {
   );
   const isRemoveBG = activeEditTool === "remove-bg";
   const isReplaceBG = activeEditTool === "replace-bg";
+  const replaceInputID = sessionInput?.id ?? (isDream ? inputID : "");
+  const showGenerationTab =
+    (isDream && !isRemoveBG) || (isReplaceBG && !!replaceInputID);
+  const generationTabID = isReplaceBG ? replaceInputID : inputID;
 
   const bottom = selectedID && (
     <App.Sidebar.Tab.Bottom>
@@ -76,8 +81,8 @@ export function Sidebar() {
       >
         <Editor.EditTool.Rail />
         <Editor.Tool.Sidebar.Section />
-        {((isDream && !isRemoveBG) || isReplaceBG) && (
-          <Generation.Image.Sidebar.Tab variant="editor" id={inputID} />
+        {showGenerationTab && (
+          <Generation.Image.Sidebar.Tab variant="editor" id={generationTabID} />
         )}
         {isRemoveBG && <RemoveBgAction />}
         {isReplaceBG && <ReplaceBgAction />}

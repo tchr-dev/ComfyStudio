@@ -218,7 +218,7 @@ export namespace Background {
 
 In `packages/comfystudio-ui/src/Editor/Sidebar/index.tsx`, use the active edit tool to toggle content:
 - For `remove-bg`: hide Prompt/Settings and show a single action block.
-- For `replace-bg`: keep Prompt/Settings visible, add a Replace BG action block.
+- For `replace-bg`: keep Prompt/Settings visible, add a Replace BG action block. When a selected image has no input, fall back to the current session input id for prompt/settings; if no session input exists, hide the prompt/settings tab.
 
 **Step 4: Run test to verify it passes**
 
