@@ -36,4 +36,12 @@ export namespace DockState {
   export const save = (state: DockLayoutState): void => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   };
+
+  export const isPanelVisible = (
+    panelId: string,
+    ctx: { activeTool?: string }
+  ): boolean => {
+    if (panelId === "editor-tool") return ctx.activeTool === "brush";
+    return true;
+  };
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 
+import { Editor } from "~/Editor";
 import { Generation } from "~/Generation";
 
 import { ToolsPanel } from "./Panels/ToolsPanel";
@@ -17,6 +18,7 @@ export function DockLayout() {
     DockState.load()
   );
   const { input } = Generation.Image.Session.useCurrentInput();
+  const [activeTool] = Editor.Tool.Active.use();
 
   useEffect(() => {
     DockState.save(layout);
@@ -28,7 +30,10 @@ export function DockLayout() {
         <Panel title="Tools">
           <ToolsPanel />
         </Panel>
-        <Panel title="Editor">
+        <Panel
+          title="Editor"
+          open={DockState.isPanelVisible("editor-tool", { activeTool })}
+        >
           <EditorToolPanel />
         </Panel>
         {input?.id && (

@@ -15,6 +15,15 @@ vi.mock("~/Generation", () => ({
     },
   },
 }));
+vi.mock("~/Editor", () => ({
+  Editor: {
+    Tool: {
+      Active: {
+        use: () => ["select", () => {}],
+      },
+    },
+  },
+}));
 
 vi.mock("./Panels/ToolsPanel", () => ({
   ToolsPanel: () => null,

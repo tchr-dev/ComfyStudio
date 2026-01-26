@@ -17,4 +17,11 @@ describe("DockState", () => {
     const state = DockState.load();
     expect(state.panels[0].id).toBe("tools");
   });
+
+  it("hides editor tool panel when no brush tool is active", () => {
+    const visible = DockState.isPanelVisible("editor-tool", {
+      activeTool: "select",
+    });
+    expect(visible).toBe(false);
+  });
 });
