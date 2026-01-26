@@ -187,7 +187,12 @@ export namespace Background {
     const selectedID = Editor.Selection.OnlyOne.use();
     const entities = Editor.Entities.use();
     const image = useMemo(
-      () => (selectedID ? (entities.get(selectedID) as Editor.Image | undefined) : undefined),
+      () =>
+        selectedID
+          ? (entities.find((entity) => entity.id === selectedID) as
+              | Editor.Image
+              | undefined)
+          : undefined,
       [entities, selectedID]
     );
     return { selectedID, image };
@@ -195,7 +200,7 @@ export namespace Background {
 
   export const useMockDuplicate = (label: string) => {
     const { selectedID, image } = useSelectedImage();
-    const createImage = Editor.Image.Create.use();
+    const createImage = Editor.Image.Create.useFromURL();
 
     return useCallback(async () => {
       if (!image || !image.element?.src) return;

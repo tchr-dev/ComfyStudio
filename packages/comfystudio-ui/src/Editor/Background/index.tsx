@@ -18,11 +18,11 @@ export namespace Background {
 
   export const useMockDuplicate = (label: string) => {
     const { image } = useSelectedImage();
-    const createImage = Editor.Image.Create.use();
+    const createImage = Editor.Image.Create.useFromURL();
 
     return useCallback(async () => {
       if (!image || !image.element?.src) return;
-      await createImage({
+      await createImage(image.element.src, {
         ...image,
         id: ID.create(),
         title: `${image.title ?? "Image"} (${label})`,

@@ -76,12 +76,12 @@ export function Sidebar() {
       >
         <Editor.EditTool.Rail />
         <Editor.Tool.Sidebar.Section />
-        {isDream && !isRemoveBG && (
+        {((isDream && !isRemoveBG) || isReplaceBG) && (
           <Generation.Image.Sidebar.Tab variant="editor" id={inputID} />
         )}
         {isRemoveBG && <RemoveBgAction />}
         {isReplaceBG && <ReplaceBgAction />}
-        {!isDream && !isRemoveBG && selectedID && (
+        {!isDream && !isRemoveBG && !isReplaceBG && selectedID && (
           <Editor.Image.Sidebar.Tab id={selectedID} />
         )}
         {!selectedID && <EmptySidebar />}
