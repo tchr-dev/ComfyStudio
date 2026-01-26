@@ -40,10 +40,11 @@ export function Sidebar() {
   );
   const isRemoveBG = activeEditTool === "remove-bg";
   const isReplaceBG = activeEditTool === "replace-bg";
-  const replaceInputID = sessionInput?.id ?? (isDream ? inputID : "");
+  const selectedInput = Generation.Image.Input.get(inputID);
+  const replaceInputID = selectedInput?.id ?? sessionInput?.id;
   const showGenerationTab =
     (isDream && !isRemoveBG) || (isReplaceBG && !!replaceInputID);
-  const generationTabID = isReplaceBG ? replaceInputID : inputID;
+  const generationTabID = isReplaceBG ? replaceInputID ?? "" : inputID;
 
   const bottom = selectedID && (
     <App.Sidebar.Tab.Bottom>
