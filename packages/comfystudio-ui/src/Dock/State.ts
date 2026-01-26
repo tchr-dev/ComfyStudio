@@ -10,6 +10,8 @@ export type DockLayoutState = {
 };
 
 export namespace DockState {
+  const STORAGE_KEY = "dock-layout.v1";
+
   export const createDefault = (): DockLayoutState => ({
     panels: [
       {
@@ -20,4 +22,18 @@ export namespace DockState {
       },
     ],
   });
+
+  export const load = (): DockLayoutState => {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return createDefault();
+    try {
+      return JSON.parse(raw) as DockLayoutState;
+    } catch {
+      return createDefault();
+    }
+  };
+
+  export const save = (state: DockLayoutState): void => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  };
 }

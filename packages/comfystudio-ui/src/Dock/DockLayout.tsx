@@ -1,5 +1,19 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+
+import { DockLayoutState, DockState } from "./State";
 
 export function DockLayout({ children }: React.PropsWithChildren) {
-  return <div className="flex h-full w-full gap-3">{children}</div>;
+  const [layout, setLayout] = useState<DockLayoutState>(() =>
+    DockState.load()
+  );
+
+  useEffect(() => {
+    DockState.save(layout);
+  }, [layout]);
+
+  return (
+    <div className="flex h-full w-full gap-3" data-dock-layout>
+      {children}
+    </div>
+  );
 }

@@ -6,4 +6,15 @@ describe("DockState", () => {
     const state = DockState.createDefault();
     expect(state.panels.length).toBeGreaterThan(0);
   });
+
+  it("hydrates from localStorage", () => {
+    localStorage.setItem(
+      "dock-layout.v1",
+      JSON.stringify({
+        panels: [{ id: "tools", column: "left", order: 0, open: true }],
+      })
+    );
+    const state = DockState.load();
+    expect(state.panels[0].id).toBe("tools");
+  });
 });
