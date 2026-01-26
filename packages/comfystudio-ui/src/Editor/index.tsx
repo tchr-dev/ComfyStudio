@@ -3,6 +3,7 @@
 import { GlobalState } from "~/GlobalState";
 
 import { Brush } from "./Brush";
+import { Background } from "./Background";
 import { Camera } from "./Camera";
 import { Canvas } from "./Canvas";
 import { Dream } from "./Dream";
@@ -54,6 +55,7 @@ export function Editor() {
 
 export declare namespace Editor {
   export {
+    Background,
     Brush,
     Camera,
     Canvas,
@@ -78,6 +80,7 @@ export declare namespace Editor {
 }
 
 export namespace Editor {
+  Editor.Background = Background;
   Editor.Brush = Brush;
   Editor.Camera = Camera;
   Editor.Canvas = Canvas;

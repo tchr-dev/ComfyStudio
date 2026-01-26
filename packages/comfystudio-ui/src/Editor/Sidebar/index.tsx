@@ -19,6 +19,7 @@ export function Sidebar() {
   const location = Router.useLocation();
   const selectedID = Editor.Selection.OnlyOne.use();
   const dreams = Editor.Entities.useType("dream") as Editor.Dream[];
+  const { active: activeEditTool } = Editor.EditTool.useActive();
   const [inputID, setInputID] = useState("");
   const createDream = Editor.Dream.Render.use(inputID);
 
@@ -36,6 +37,8 @@ export function Sidebar() {
     () => dreams.filter(({ id }) => id === selectedID).length > 0,
     [dreams, selectedID]
   );
+  const isRemoveBG = activeEditTool === "remove-bg";
+  const isReplaceBG = activeEditTool === "replace-bg";
 
   const bottom = selectedID && (
     <App.Sidebar.Tab.Bottom>
@@ -73,9 +76,11 @@ export function Sidebar() {
       >
         <Editor.EditTool.Rail />
         <Editor.Tool.Sidebar.Section />
-        {isDream && (
+        {isDream && !isRemoveBG && (
           <Generation.Image.Sidebar.Tab variant="editor" id={inputID} />
         )}
+        {isRemoveBG && <RemoveBgAction />}
+        {isReplaceBG && <ReplaceBgAction />}
         {!isDream && selectedID && <Editor.Image.Sidebar.Tab id={selectedID} />}
         {!selectedID && <EmptySidebar />}
       </App.Sidebar.Tab.Set>
@@ -175,6 +180,42 @@ function EditorSettings({ name }: { name?: string }) {
           </div>
         </div>
       </div>
+    </App.Sidebar.Section>
+  );
+}
+
+function RemoveBgAction() {
+  const { image } = Editor.Background.useSelectedImage();
+  const onRemove = Editor.Background.useMockDuplicate("Mock Remove BG");
+
+  return (
+    <App.Sidebar.Section divider title="Remove BG" defaultExpanded padding="sm">
+      <Theme.Button
+        fullWidth
+        icon={Theme.Icon.Eraser}
+        disabled={!image?.element?.src}
+        onClick={onRemove}
+      >
+        Mock Remove BG
+      </Theme.Button>
+    </App.Sidebar.Section>
+  );
+}
+
+function ReplaceBgAction() {
+  const { image } = Editor.Background.useSelectedImage();
+  const onReplace = Editor.Background.useMockDuplicate("Mock Replace BG");
+
+  return (
+    <App.Sidebar.Section divider title="Replace BG" defaultExpanded padding="sm">
+      <Theme.Button
+        fullWidth
+        icon={Theme.Icon.Edit}
+        disabled={!image?.element?.src}
+        onClick={onReplace}
+      >
+        Mock Replace BG
+      </Theme.Button>
     </App.Sidebar.Section>
   );
 }
