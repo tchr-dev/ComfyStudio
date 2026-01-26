@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from "react";
 
+import { Generation } from "~/Generation";
+
+import { ToolsPanel } from "./Panels/ToolsPanel";
+import { AdvancedPanel } from "./Panels/AdvancedPanel";
+import { EditorToolPanel } from "./Panels/EditorToolPanel";
+import { InputPanel } from "./Panels/InputPanel";
+import { LayersPanel } from "./Panels/LayersPanel";
+import { PromptPanel } from "./Panels/PromptPanel";
+import { Column } from "./Column";
+import { Panel } from "./Panel";
 import { DockLayoutState, DockState } from "./State";
 
-export function DockLayout({ children }: React.PropsWithChildren) {
+export function DockLayout() {
   const [layout, setLayout] = useState<DockLayoutState>(() =>
     DockState.load()
   );
+  const { input } = Generation.Image.Session.useCurrentInput();
 
   useEffect(() => {
     DockState.save(layout);
@@ -13,7 +24,38 @@ export function DockLayout({ children }: React.PropsWithChildren) {
 
   return (
     <div className="flex h-full w-full gap-3" data-dock-layout>
-      {children}
+      <Column position="left">
+        <Panel title="Tools">
+          <ToolsPanel />
+        </Panel>
+        <Panel title="Editor">
+          <EditorToolPanel />
+        </Panel>
+        {input?.id && (
+          <>
+            <Panel title="Prompt">
+              <PromptPanel inputId={input.id} />
+            </Panel>
+            <Panel title="Input">
+              <InputPanel inputId={input.id} />
+            </Panel>
+            <Panel title="Settings">
+              <div className="flex flex-col gap-4">
+                <Generation.Image.Size id={input.id} />
+                <Generation.Image.Count.Slider />
+              </div>
+            </Panel>
+            <Panel title="Advanced">
+              <AdvancedPanel inputId={input.id} />
+            </Panel>
+          </>
+        )}
+      </Column>
+      <Column position="right">
+        <Panel title="Layers">
+          <LayersPanel />
+        </Panel>
+      </Column>
     </div>
   );
 }

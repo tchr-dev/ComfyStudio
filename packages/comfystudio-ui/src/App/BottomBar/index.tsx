@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import { useClickAway } from "react-use";
+import { DockLayout } from "~/Dock/DockLayout";
 import { Generation } from "~/Generation";
 import { Theme } from "~/Theme";
 
@@ -40,7 +41,7 @@ export function BottomBar() {
             layout="preserve-aspect"
             className="flex max-h-[60vh] min-h-0 shrink grow-0 flex-col overflow-y-auto"
           >
-            <Generation.Image.Sidebar.Tab id={input.id} />
+            <DockLayout />
           </motion.div>
         )}
         {input && (
