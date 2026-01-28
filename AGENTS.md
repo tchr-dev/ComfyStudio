@@ -264,6 +264,26 @@ Task is "done" when ALL of these pass:
 
 ## Project Boundaries (DO NOT CHANGE)
 
+### Architecture Decision Records (ADRs)
+
+**Location:** `docs/adr/` - READ BEFORE CHANGING ARCHITECTURE
+
+**Rule:** If an ADR exists for an area, DO NOT change without explicit user approval.
+
+**Current locked decisions:**
+- Tool discovery (ADR-0001): id = filename, glob imports
+- Tool structure (ADR-0002): definitions/ vs implementations/
+- Type system (ADR-0003): Discriminated unions for categories
+- Dock persistence (ADR-0004): localStorage with versioning
+
+**When AI wants to "improve" something:**
+1. Check if ADR exists: `ls docs/adr/`
+2. If yes, read the ADR
+3. If ADR forbids the change, don't do it (even if it seems better)
+4. If you think ADR is wrong, ask user (don't change it yourself)
+
+### General Boundaries
+
 **Without explicit ADR or user approval, DO NOT:**
 
 1. Change monorepo structure (Yarn workspaces)
@@ -273,6 +293,7 @@ Task is "done" when ALL of these pass:
 5. Change plugin architecture
 6. Force push to main/master
 7. Amend commits (create new commits instead)
+8. **Violate any ADR decision** (even if it seems like an improvement)
 
 **Safe to modify:**
 - Tool definitions/implementations

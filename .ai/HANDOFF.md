@@ -262,11 +262,16 @@ yarn dev
 
 Before implementing, read:
 1. `AGENTS.md` - Agent operations and workflow
-2. `docs/plans/2026-01-28-declarative-tool-system-design.md` - Architecture
-3. `.ai/plans/2026-01-28-declarative-tool-system-implementation.md` - Task details
-4. `CLAUDE.md` - Codebase conventions (DDD, state management, styling)
-5. `packages/comfystudio-ui/src/Tools/Types.ts` - Existing type (ToolSummary)
-6. `packages/comfystudio-ui/src/Dock/Panels/ToolsPanel.tsx` - How tools are displayed
+2. `docs/adr/` - **Architecture Decision Records (READ FIRST!)**
+   - ADR-0001: Tool registry convention (id = filename)
+   - ADR-0002: Definitions vs implementations structure
+   - ADR-0003: Discriminated unions for categories
+   - ADR-0004: Dock persistence strategy
+3. `docs/plans/2026-01-28-declarative-tool-system-design.md` - Architecture details
+4. `.ai/plans/2026-01-28-declarative-tool-system-implementation.md` - Task breakdown
+5. `CLAUDE.md` - Codebase conventions (DDD, state management, styling)
+6. `packages/comfystudio-ui/src/Tools/Types.ts` - Existing type (ToolSummary)
+7. `packages/comfystudio-ui/src/Dock/Panels/ToolsPanel.tsx` - How tools are displayed
 
 ### Validation Commands
 

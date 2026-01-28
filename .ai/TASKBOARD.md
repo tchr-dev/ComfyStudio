@@ -128,6 +128,11 @@ _No tasks currently in progress_
 
 - **[P4]** Multi-Agent Handover Docs (Claude Sonnet 4.5) ✅
   - Files: `AI_README.md`, `.ai/STATUS.md`, `.ai/TASKBOARD.md`, `.ai/HANDOFF.md`
+  - Status: Created, committed
+
+- **[P5]** Architecture Decision Records (Claude Sonnet 4.5) ✅
+  - Files: `docs/adr/README.md`, `ADR-0001` through `ADR-0004`
+  - Locked decisions: Tool registry, definitions structure, discriminated unions, dock persistence
   - Status: Created, pending commit
 
 ---

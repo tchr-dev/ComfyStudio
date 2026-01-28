@@ -87,10 +87,17 @@ yarn build
 
 ## Architecture Decision Records
 
-**Coming soon:** `docs/adr/` will contain architectural decisions:
-- ADR-0001: Tool registry convention-based loading
-- ADR-0002: Dock layout persistence strategy
-- ADR-0003: [Future decisions]
+**Location:** `docs/adr/` - Locked architectural decisions
+
+**Purpose:** Protect intentional design choices from AI "improvements"
+
+**Current ADRs:**
+- **ADR-0001:** Tool Registry Convention-Based Loading (id = filename, glob imports)
+- **ADR-0002:** Tool Definition Structure (definitions/ vs implementations/ split)
+- **ADR-0003:** Tool Categories as Discriminated Unions (type safety boundaries)
+- **ADR-0004:** Dock Layout Persistence Strategy (localStorage, versioning)
+
+**For AI Agents:** Before changing architecture, check if an ADR exists. ADRs override general best practices. If ADR seems wrong, ask user (don't change it).
 
 ## Multi-Agent Protocol
 

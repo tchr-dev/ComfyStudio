@@ -31,7 +31,8 @@ Enable tools to be defined through TypeScript configuration files with automatic
 3. ✅ **Implementation plan created** - 18 tasks with TDD approach in `.ai/plans/2026-01-28-declarative-tool-system-implementation.md`
 4. ✅ **Multi-agent handover docs created** - AI_README.md, AGENTS.md, and .ai/ folder structure
 5. ✅ **Documentation organized** - AI docs in .ai/, human docs in docs/
-6. ✅ **All planning committed to git** - Main branch up to date
+6. ✅ **ADRs created** - 4 ADRs protecting key architectural decisions from AI "improvements"
+7. ✅ **All planning committed to git** - Main branch up to date
 
 **Commits:**
 - `e959e38` - Design document
