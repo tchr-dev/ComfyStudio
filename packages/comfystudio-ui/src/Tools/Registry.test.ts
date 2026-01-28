@@ -23,4 +23,22 @@ describe("ToolRegistry", () => {
       expect(e).toBeDefined();
     }
   });
+
+  it("loads brush tool definition", async () => {
+    const tools = await ToolRegistry.list();
+    const brush = tools.find((t) => t.id === "brush");
+
+    expect(brush).toBeDefined();
+    expect(brush?.name).toBe("Eraser");
+    expect(brush?.category).toBe("canvas-interaction");
+    expect(brush?.settings).toHaveLength(3);
+  });
+
+  it("retrieves brush tool by ID", async () => {
+    const brush = await ToolRegistry.get("brush");
+
+    expect(brush).not.toBeNull();
+    expect(brush?.id).toBe("brush");
+    expect(brush?.shortcut).toBe("e");
+  });
 });
