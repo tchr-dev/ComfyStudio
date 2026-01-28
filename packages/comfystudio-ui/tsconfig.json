@@ -5,7 +5,7 @@
     "jsxImportSource": "@emotion/react",
     "noEmit": true,
     "baseUrl": "./",
-    "types": ["react", "node"],
+    "types": ["react", "node", "vite/client"],
 
     "plugins": [{ "name": "typescript-styled-plugin" }]
   },
