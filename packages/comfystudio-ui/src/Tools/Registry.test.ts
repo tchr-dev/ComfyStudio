@@ -41,4 +41,13 @@ describe("ToolRegistry", () => {
     expect(brush?.id).toBe("brush");
     expect(brush?.shortcut).toBe("e");
   });
+
+  it("loads select tool definition", async () => {
+    const tools = await ToolRegistry.list();
+    const select = tools.find((t) => t.id === "select");
+
+    expect(select).toBeDefined();
+    expect(select?.name).toBe("Select");
+    expect(select?.category).toBe("selection");
+  });
 });
