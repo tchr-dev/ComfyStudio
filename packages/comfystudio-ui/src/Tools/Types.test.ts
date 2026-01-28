@@ -4,7 +4,7 @@ import type {
   CanvasInteractionTool,
   WorkflowTool,
   SelectionTool,
-  ToolSettingType,
+  ToolSetting,
 } from "./Types";
 
 describe("Tool Types", () => {
@@ -16,7 +16,6 @@ describe("Tool Types", () => {
       icon: "Brush",
       category: "canvas-interaction",
       cursor: "crosshair",
-      settings: [],
     };
     expect(tool.category).toBe("canvas-interaction");
   });
@@ -29,7 +28,6 @@ describe("Tool Types", () => {
       icon: "Sparkles",
       category: "workflow",
       workflow: "txt2img",
-      settings: [],
     };
     expect(tool.category).toBe("workflow");
   });
@@ -42,7 +40,6 @@ describe("Tool Types", () => {
       icon: "Pointer",
       category: "selection",
       multiSelect: true,
-      settings: [],
     };
     expect(tool.category).toBe("selection");
   });
@@ -56,7 +53,6 @@ describe("Tool Types", () => {
         icon: "Brush",
         category: "canvas-interaction",
         cursor: "crosshair",
-        settings: [],
       },
       {
         id: "generate",
@@ -65,7 +61,6 @@ describe("Tool Types", () => {
         icon: "Sparkles",
         category: "workflow",
         workflow: "txt2img",
-        settings: [],
       },
     ];
 
@@ -74,7 +69,7 @@ describe("Tool Types", () => {
   });
 
   it("should define all setting types", () => {
-    const settings: ToolSettingType[] = [
+    const settings: ToolSetting[] = [
       {
         type: "slider",
         id: "size",
@@ -94,13 +89,15 @@ describe("Tool Types", () => {
         id: "prompt",
         label: "Prompt",
         default: "",
-        rows: 4,
       },
       {
         type: "dropdown",
         id: "sampler",
         label: "Sampler",
-        options: ["euler", "dpm"],
+        options: [
+          { value: "euler", label: "Euler" },
+          { value: "dpm", label: "DPM" },
+        ],
         default: "euler",
       },
       {

@@ -1,100 +1,93 @@
-export type ID = string;
+import { KonvaEventObject } from "konva/lib/Node";
 
-// Setting types
-export type SliderSetting = {
-  type: "slider";
+// Base setting type
+export type BaseToolSetting = {
   id: string;
   label: string;
+  description?: string;
+};
+
+// Setting types
+export type SliderSetting = BaseToolSetting & {
+  type: "slider";
   default: number;
   min: number;
   max: number;
   step?: number;
 };
 
-export type TextSetting = {
-  type: "text";
-  id: string;
-  label: string;
+export type TextSetting = BaseToolSetting & {
+  type: "text" | "textarea";
   default: string;
   placeholder?: string;
+  maxLength?: number;
 };
 
-export type TextareaSetting = {
-  type: "textarea";
-  id: string;
-  label: string;
-  default: string;
-  placeholder?: string;
-  rows?: number;
-};
-
-export type DropdownSetting = {
+export type DropdownSetting = BaseToolSetting & {
   type: "dropdown";
-  id: string;
-  label: string;
-  options: string[];
+  options: { value: string; label: string }[];
   default: string;
 };
 
-export type CheckboxSetting = {
+export type CheckboxSetting = BaseToolSetting & {
   type: "checkbox";
-  id: string;
-  label: string;
   default: boolean;
 };
 
-export type CustomSetting = {
+export type CustomSetting = BaseToolSetting & {
   type: "custom";
-  id: string;
-  label: string;
-  component: React.ComponentType<{ value: unknown; onChange: (value: unknown) => void }>;
-  default: unknown;
+  component: string;
+  props?: Record<string, unknown>;
 };
 
-export type ToolSettingType =
+export type ToolSetting =
   | SliderSetting
   | TextSetting
-  | TextareaSetting
   | DropdownSetting
   | CheckboxSetting
   | CustomSetting;
 
-// Tool categories (discriminated union)
-export type CanvasInteractionTool = {
-  id: ID;
+// Base tool definition
+export type BaseToolDefinition = {
+  id: string;
   name: string;
-  description: string;
+  description?: string;
   icon: string;
-  category: "canvas-interaction";
-  cursor?: string;
   shortcut?: string;
-  settings: ToolSettingType[];
+  category: "canvas-interaction" | "workflow" | "selection";
+  settings?: ToolSetting[];
 };
 
-export type WorkflowTool = {
-  id: ID;
-  name: string;
-  description: string;
-  icon: string;
+// Tool categories (discriminated union)
+export type CanvasInteractionTool = BaseToolDefinition & {
+  category: "canvas-interaction";
+  cursor?: "crosshair" | "default" | "custom";
+  cursorComponent?: string;
+};
+
+export type WorkflowTool = BaseToolDefinition & {
   category: "workflow";
   workflow: string;
   inputMapping?: Record<string, string>;
-  shortcut?: string;
-  settings: ToolSettingType[];
 };
 
-export type SelectionTool = {
-  id: ID;
-  name: string;
-  description: string;
-  icon: string;
+export type SelectionTool = BaseToolDefinition & {
   category: "selection";
-  multiSelect: boolean;
-  shortcut?: string;
-  settings: ToolSettingType[];
+  multiSelect?: boolean;
 };
 
 export type ToolDefinition = CanvasInteractionTool | WorkflowTool | SelectionTool;
+
+// Tool implementation interface
+export type ToolImplementation = {
+  onActivate?: () => void;
+  onDeactivate?: () => void;
+  onMouseDown?: (e: KonvaEventObject<MouseEvent>) => void;
+  onMouseMove?: (e: KonvaEventObject<MouseEvent>) => void;
+  onMouseUp?: (e: KonvaEventObject<MouseEvent>) => void;
+  executeWorkflow?: (settings: Record<string, any>) => Promise<void>;
+  SettingsPanel?: React.ComponentType;
+};
 
 // Legacy type for backward compatibility
 export type ToolSummary = {
