@@ -50,4 +50,15 @@ describe("ToolRegistry", () => {
     expect(select?.name).toBe("Select");
     expect(select?.category).toBe("selection");
   });
+
+  it("loads generate tool definition", async () => {
+    const tools = await ToolRegistry.list();
+    const generate = tools.find((t) => t.id === "generate");
+
+    expect(generate).toBeDefined();
+    expect(generate?.category).toBe("workflow");
+    if (generate?.category === "workflow") {
+      expect(generate.workflow).toBe("txt2img");
+    }
+  });
 });
