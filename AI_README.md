@@ -25,9 +25,9 @@ This file provides the canonical entry point for any AI agent working on ComfySt
   - `.ai/HANDOFF.md` - Detailed handover information
 
 ### Architecture & Design
-- **Dock System:** `docs/plans/2026-01-26-dock-supercontrols.md`
+- **Dock System Plan:** `docs/plans/2026-01-26-dock-supercontrols.md`
 - **Tool System Design:** `docs/plans/2026-01-28-declarative-tool-system-design.md`
-- **Tool System Implementation:** `docs/plans/2026-01-28-declarative-tool-system-implementation.md`
+- **Tool System Implementation Plan:** `.ai/plans/2026-01-28-declarative-tool-system-implementation.md` *(agent-executable)*
 
 ### Codebase Guide
 - **CLAUDE.md** - Comprehensive codebase guide (architecture, commands, conventions)

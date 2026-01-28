@@ -28,9 +28,10 @@ Enable tools to be defined through TypeScript configuration files with automatic
 
 1. ✅ **Brainstorming session completed** - Defined declarative tool system architecture
 2. ✅ **Design document written** - `docs/plans/2026-01-28-declarative-tool-system-design.md`
-3. ✅ **Implementation plan created** - 18 tasks with TDD approach in `docs/plans/2026-01-28-declarative-tool-system-implementation.md`
-4. ✅ **Multi-agent handover docs created** - AI_README.md and .ai/ folder structure
-5. ✅ **All planning committed to git** - Main branch up to date
+3. ✅ **Implementation plan created** - 18 tasks with TDD approach in `.ai/plans/2026-01-28-declarative-tool-system-implementation.md`
+4. ✅ **Multi-agent handover docs created** - AI_README.md, AGENTS.md, and .ai/ folder structure
+5. ✅ **Documentation organized** - AI docs in .ai/, human docs in docs/
+6. ✅ **All planning committed to git** - Main branch up to date
 
 **Commits:**
 - `e959e38` - Design document

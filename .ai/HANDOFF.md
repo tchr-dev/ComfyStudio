@@ -60,7 +60,7 @@
 
 ### 3. Implementation Plan Created
 
-**File:** `docs/plans/2026-01-28-declarative-tool-system-implementation.md`
+**File:** `.ai/plans/2026-01-28-declarative-tool-system-implementation.md`
 
 **Structure:**
 - 18 tasks in 5 phases
@@ -261,11 +261,12 @@ yarn dev
 ### Critical Files to Understand
 
 Before implementing, read:
-1. `docs/plans/2026-01-28-declarative-tool-system-design.md` - Architecture
-2. `docs/plans/2026-01-28-declarative-tool-system-implementation.md` - Task details
-3. `CLAUDE.md` - Codebase conventions (DDD, state management, styling)
-4. `packages/comfystudio-ui/src/Tools/Types.ts` - Existing type (ToolSummary)
-5. `packages/comfystudio-ui/src/Dock/Panels/ToolsPanel.tsx` - How tools are displayed
+1. `AGENTS.md` - Agent operations and workflow
+2. `docs/plans/2026-01-28-declarative-tool-system-design.md` - Architecture
+3. `.ai/plans/2026-01-28-declarative-tool-system-implementation.md` - Task details
+4. `CLAUDE.md` - Codebase conventions (DDD, state management, styling)
+5. `packages/comfystudio-ui/src/Tools/Types.ts` - Existing type (ToolSummary)
+6. `packages/comfystudio-ui/src/Dock/Panels/ToolsPanel.tsx` - How tools are displayed
 
 ### Validation Commands
 

@@ -1,7 +1,7 @@
 # Task Board
 
 **Last Updated:** 2026-01-28
-**Source:** `docs/plans/2026-01-28-declarative-tool-system-implementation.md`
+**Source:** `.ai/plans/2026-01-28-declarative-tool-system-implementation.md`
 
 ---
 
