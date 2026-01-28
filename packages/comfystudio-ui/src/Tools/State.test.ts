@@ -48,4 +48,31 @@ describe("ToolState", () => {
 
     expect(result.current[0]).toBe(20);
   });
+
+  it("preserves existing values when initializing defaults", async () => {
+    // First, set a custom value
+    const { result } = renderHook(() =>
+      ToolState.useToolSetting("brush", "size")
+    );
+
+    act(() => {
+      result.current[1](100); // User sets size to 100
+    });
+
+    expect(result.current[0]).toBe(100);
+
+    // Now initialize defaults (size: 20, blur: 5)
+    await act(async () => {
+      await ToolState.initializeDefaults("brush", { size: 20, blur: 5 });
+    });
+
+    // The existing value (100) should be preserved, NOT overwritten with default (20)
+    expect(result.current[0]).toBe(100);
+
+    // But new defaults should be set for settings that don't exist yet
+    const { result: blurResult } = renderHook(() =>
+      ToolState.useToolSetting("brush", "blur")
+    );
+    expect(blurResult.current[0]).toBe(5);
+  });
 });
