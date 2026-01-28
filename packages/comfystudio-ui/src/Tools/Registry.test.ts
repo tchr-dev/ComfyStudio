@@ -61,4 +61,15 @@ describe("ToolRegistry", () => {
       expect(generate.workflow).toBe("txt2img");
     }
   });
+
+  it("loads remove-background tool definition", async () => {
+    const tools = await ToolRegistry.list();
+    const removeBg = tools.find((t) => t.id === "remove-background");
+
+    expect(removeBg).toBeDefined();
+    expect(removeBg?.category).toBe("workflow");
+    if (removeBg?.category === "workflow") {
+      expect(removeBg.workflow).toBe("remove-background");
+    }
+  });
 });
