@@ -130,6 +130,327 @@ Located in `packages/comfystudio-ui/src/`:
 - **`Dock`** - Docking panel system for UI layout
 - **`Tools`** - Tool registry and tool-related functionality
 
+### Declarative Tool System
+
+ComfyStudio uses a **convention-based, type-safe, declarative tool system** that automatically discovers and loads tools from the `Tools/definitions/` directory. This system separates tool definitions (pure data) from implementations (behavior), enabling tools to be added simply by creating new definition files.
+
+#### Key Benefits
+
+- **Convention-based auto-discovery**: No manual registration required
+- **Type-safe**: Full TypeScript support with discriminated unions
+- **Auto-rendering UI**: Settings panels generate automatically
+- **Isolated state**: Per-tool, per-setting state management
+- **Integration-friendly**: Wraps existing code without duplication
+
+See architectural decision records in `docs/adr/` for design rationale:
+- **ADR-0001**: Convention-based tool discovery (tool ID = filename)
+- **ADR-0002**: Tool definition structure and setting types
+- **ADR-0003**: Tool categories using discriminated unions
+
+#### Creating a New Tool
+
+To add a new tool, create a definition file in `Tools/definitions/`:
+
+**Critical convention**: Tool ID must exactly match the filename (kebab-case).
+
+```tsx
+// packages/comfystudio-ui/src/Tools/definitions/my-tool.ts
+import { CanvasInteractionTool } from "../Types";
+
+const myTool: CanvasInteractionTool = {
+  id: "my-tool",  // MUST match filename
+  name: "My Tool",
+  description: "Tool description shown in UI",
+  icon: "IconName",  // From lucide-react icons
+  shortcut: "m",     // Optional keyboard shortcut
+  category: "canvas-interaction",
+  settings: [
+    {
+      id: "size",
+      type: "slider",
+      label: "Size",
+      description: "Helpful description for users",
+      min: 1,
+      max: 100,
+      step: 1,
+      default: 20,
+    },
+  ],
+};
+
+export default myTool;
+```
+
+The tool will be automatically discovered and loaded by `Tools/Registry.ts`.
+
+#### Tool Categories
+
+Tools are organized into three categories using TypeScript discriminated unions:
+
+##### Canvas Interaction Tools
+
+Tools that interact with the canvas (drawing, erasing, etc.):
+
+```tsx
+import { CanvasInteractionTool } from "../Types";
+
+const brushTool: CanvasInteractionTool = {
+  id: "brush",
+  name: "Eraser",
+  description: "Remove pixels from images by painting over them",
+  icon: "Eraser",
+  shortcut: "e",
+  category: "canvas-interaction",
+  cursor: "custom",           // Optional: "crosshair" | "default" | "custom"
+  cursorComponent: "BrushCursor",  // Optional: Component name for custom cursor
+  settings: [/* ... */],
+};
+
+export default brushTool;
+```
+
+##### Workflow Tools
+
+Tools that execute ComfyUI workflows:
+
+```tsx
+import { WorkflowTool } from "../Types";
+
+const generateTool: WorkflowTool = {
+  id: "generate",
+  name: "Generate",
+  description: "Generate images using AI models",
+  icon: "Sparkles",
+  shortcut: "g",
+  category: "workflow",
+  workflow: "txt2img",        // ComfyUI workflow name
+  inputMapping: {             // Optional: Map settings to workflow inputs
+    "prompt": "positive",
+    "negativePrompt": "negative",
+  },
+  settings: [
+    {
+      id: "prompt",
+      type: "textarea",
+      label: "Prompt",
+      placeholder: "Describe what you want to generate...",
+      default: "",
+    },
+    {
+      id: "sampler",
+      type: "dropdown",
+      label: "Sampler",
+      options: [
+        { value: "euler", label: "Euler" },
+        { value: "dpmpp_2m", label: "DPM++ 2M" },
+      ],
+      default: "euler",
+    },
+  ],
+};
+
+export default generateTool;
+```
+
+##### Selection Tools
+
+Tools for selecting and manipulating canvas entities:
+
+```tsx
+import { SelectionTool } from "../Types";
+
+const selectTool: SelectionTool = {
+  id: "select",
+  name: "Select",
+  description: "Select and manipulate canvas entities",
+  icon: "MousePointer",
+  shortcut: "v",
+  category: "selection",
+  multiSelect: true,  // Optional: Enable multi-selection
+};
+
+export default selectTool;
+```
+
+#### Setting Types
+
+Tools can have five types of settings, all of which auto-render in the UI:
+
+##### Slider
+
+```tsx
+{
+  id: "size",
+  type: "slider",
+  label: "Size",
+  description: "Optional helpful description",
+  min: 1,
+  max: 100,
+  step: 1,      // Optional: defaults to 1
+  default: 20,
+}
+```
+
+##### Text and Textarea
+
+```tsx
+{
+  id: "prompt",
+  type: "textarea",  // or "text" for single-line
+  label: "Prompt",
+  placeholder: "Optional placeholder text",
+  maxLength: 500,    // Optional
+  default: "",
+}
+```
+
+##### Dropdown
+
+```tsx
+{
+  id: "sampler",
+  type: "dropdown",
+  label: "Sampler",
+  options: [
+    { value: "euler", label: "Euler" },
+    { value: "dpmpp_2m", label: "DPM++ 2M" },
+  ],
+  default: "euler",
+}
+```
+
+##### Checkbox
+
+```tsx
+{
+  id: "enabled",
+  type: "checkbox",
+  label: "Enable Feature",
+  description: "Toggle this feature on/off",
+  default: false,
+}
+```
+
+##### Custom
+
+```tsx
+{
+  id: "advanced",
+  type: "custom",
+  label: "Advanced Options",
+  component: "AdvancedSettings",  // Component name to render
+  props: {                        // Optional props for component
+    mode: "expert",
+  },
+}
+```
+
+#### Tool Implementation
+
+Create an optional implementation file to provide custom behavior:
+
+```tsx
+// packages/comfystudio-ui/src/Tools/implementations/my-tool.ts
+import { ToolImplementation } from "../Types";
+import { MyToolPanel } from "~/MyFeature/ToolPanel";
+
+const implementation: ToolImplementation = {
+  // Optional: Custom settings panel component
+  SettingsPanel: MyToolPanel,
+
+  // Optional: Called when tool is activated
+  onActivate: () => {
+    console.log("Tool activated");
+  },
+
+  // Optional: Called when tool is deactivated
+  onDeactivate: () => {
+    console.log("Tool deactivated");
+  },
+
+  // Optional: Canvas event handlers
+  onMouseDown: (e) => { /* handle mouse down */ },
+  onMouseMove: (e) => { /* handle mouse move */ },
+  onMouseUp: (e) => { /* handle mouse up */ },
+
+  // Optional: For workflow tools
+  executeWorkflow: async (settings) => {
+    // Execute ComfyUI workflow with settings
+  },
+};
+
+export default implementation;
+```
+
+**Integration pattern**: Use implementations to wrap existing functionality rather than duplicating it. See `Tools/implementations/brush.ts` which simply references `Editor.Brush.Sidebar.Section`:
+
+```tsx
+import { Editor } from "~/Editor";
+import { ToolImplementation } from "../Types";
+
+const brushImplementation: ToolImplementation = {
+  SettingsPanel: Editor.Brush.Sidebar.Section,
+  // Existing brush handles its own canvas events
+};
+
+export default brushImplementation;
+```
+
+#### State Management
+
+Tool settings are stored in isolated per-tool, per-setting state using Zustand:
+
+```tsx
+import { ToolState } from "~/Tools/State";
+
+function MyComponent() {
+  // Get current value for a setting
+  const [size, setSize] = ToolState.useToolSetting("my-tool", "size");
+
+  // Use the value
+  console.log(size);  // 20 (default value)
+
+  // Update the value
+  setSize(50);
+}
+```
+
+Defaults are automatically initialized from tool definitions when first accessed. State is persisted per-tool, so switching tools maintains their settings.
+
+#### Key Files
+
+- **`Tools/Types.ts`** - Type definitions for all tool types and settings
+- **`Tools/Registry.ts`** - Convention-based discovery and loading logic
+- **`Tools/State.ts`** - Zustand-based state management
+- **`Tools/SettingRenderer.tsx`** - Auto-renders settings UI from definitions
+- **`Tools/definitions/`** - Tool definition files (pure data)
+- **`Tools/implementations/`** - Tool implementations (behavior)
+- **`Tools/integration.test.tsx`** - Integration tests for the tool system
+
+#### Conventions
+
+- **Tool ID = filename**: `my-tool.ts` must export tool with `id: "my-tool"`
+- **Definitions are pure data**: No logic, only configuration
+- **Implementations contain behavior**: All logic goes in implementation files
+- **Settings are isolated**: Each tool's settings don't affect other tools
+- **Auto-discovery**: Just create the file, no manual registration needed
+- **Type safety**: Use discriminated unions for tool categories
+
+#### Testing
+
+Integration tests verify the entire system in `Tools/integration.test.tsx`:
+
+```bash
+yarn comfystudio-ui test Tools/integration.test.tsx
+```
+
+Tests cover:
+- Tool discovery from definitions
+- Setting default initialization
+- State isolation between tools
+- Setting renderer for all types
+- Implementation wrapper integration
+
 ### Plugin Architecture
 
 Plugins are experimental and enable different inference backends. Key plugins:
