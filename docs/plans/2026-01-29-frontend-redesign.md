@@ -650,6 +650,232 @@ Single panel that adapts to show settings for the currently selected tool.
 
 ---
 
+## Modal & Overlay Patterns
+
+### Philosophy: Modals Are Interruptions
+
+Use modals sparingly. Every modal is a context switch that breaks creative flow. When you must use them, make escape easy and purpose clear.
+
+### Interaction Hierarchy (Use in This Order)
+
+**1. Inline Actions (Preferred)**
+Handle actions directly in the UI without modals:
+- Tool settings → Parameters panel
+- Layer rename → Double-click inline edit
+- Value adjustments → Direct manipulation on canvas
+- Color changes → Inline color picker
+
+**Goal**: 70-80% of actions should be inline.
+
+**2. Popovers (Lightweight)**
+Small contextual menus that don't block the UI:
+- Right-click context menus
+- Color pickers
+- Dropdown menus
+- Tooltips
+- Tool option menus
+
+**Behavior**:
+- Dismissible by clicking outside
+- Don't steal focus from canvas unless necessary
+- Position intelligently (avoid viewport edges)
+- Max size: 320px width
+
+**3. Toasts (Non-Blocking Notifications)**
+Brief messages that auto-dismiss:
+- **Success**: "Image exported", "Layer duplicated"
+- **Non-critical errors**: "Generation failed" (clickable for details)
+- **Info**: "Shortcut changed", "Panel hidden"
+
+**Specifications**:
+- Position: Bottom-right, 16px margin
+- Duration: 3s auto-dismiss
+- Stack limit: Max 3 visible
+- Click to dismiss immediately
+- Hover to pause auto-dismiss
+- **Not for**: Critical errors, blocking issues, important decisions
+
+**4. Side Panels (Contextual)**
+Slide in from right, don't block canvas:
+- Settings panel (preferences, hotkeys, connections)
+- Export options (format, quality, destination)
+- History/undo panel
+- Plugin settings
+
+**Specifications**:
+- Width: 400px
+- Slide animation: 200ms ease-out
+- Backdrop: Subtle dim (rgba(0,0,0,0.2))
+- Canvas still visible and partially interactive
+- Escape key dismisses
+- Click backdrop dismisses
+
+**5. Modals (Last Resort)**
+
+**Only use for**:
+- **Destructive actions**: "Delete all generations?" "Clear workspace?"
+- **Critical errors**: Connection lost, save failed, data corruption
+- **Multi-step workflows**: Export wizard, batch operations
+- **Image detail view**: Full-screen preview (with dim, not full block)
+
+### Modal Design Specification
+
+**Visual Structure**:
+```
+┌─────────────────────────────────────┐
+│ ╳  Modal Title                      │ Header (56px)
+├─────────────────────────────────────┤
+│                                     │
+│  Content area                       │ Body (auto height)
+│  (scrollable if content overflows)  │ Max: 70vh
+│                                     │
+├─────────────────────────────────────┤
+│          [Cancel]  [Primary CTA]    │ Footer (72px)
+└─────────────────────────────────────┘
+```
+
+**Sizing**:
+- **Small**: 400px width (confirmations, simple forms)
+- **Medium**: 600px width (settings, multi-field forms)
+- **Large**: 800px width (complex workflows, wizards)
+- **Full**: 90vw × 90vh (image detail view, galleries)
+
+**Backdrop**:
+- Color: `rgba(0,0,0,0.6)` (semi-transparent black)
+- Blur: 4px backdrop blur
+- **Click outside**: Dismisses non-critical modals only
+- **Escape key**: Always dismisses (even critical - returns to previous state)
+- **Focus trap**: Tab cycles through modal elements only
+
+**Animations**:
+- **Enter**: Fade + scale from 0.95 → 1.0 (200ms ease-out)
+- **Exit**: Fade + scale to 0.95 (150ms ease-in)
+- **No slide-from-top** (feels dated)
+- **Respect motion preferences**: Instant if user prefers reduced motion
+
+### Modal Types & Examples
+
+**Confirmation Modal (Destructive)**:
+```
+┌─────────────────────────────────────┐
+│ ╳  Delete All Generations?          │
+├─────────────────────────────────────┤
+│                                     │
+│  This will permanently delete       │
+│  23 generated images.               │
+│                                     │
+│  This action cannot be undone.      │
+│                                     │
+├─────────────────────────────────────┤
+│          [Cancel]  [Delete All]     │
+└─────────────────────────────────────┘
+```
+- Primary CTA is destructive (red background)
+- Cancel is secondary (outline only)
+- Explicit consequences ("23 images", "cannot be undone")
+
+**Error Modal (Critical)**:
+```
+┌─────────────────────────────────────┐
+│ ╳  Connection Lost                  │
+├─────────────────────────────────────┤
+│                                     │
+│  Unable to connect to ComfyUI.      │
+│                                     │
+│  • Check ComfyUI is running         │
+│  • Verify connection settings       │
+│  • Check firewall settings          │
+│                                     │
+│  [Copy Error Details]               │
+│                                     │
+├─────────────────────────────────────┤
+│          [Settings]  [Retry]        │
+└─────────────────────────────────────┘
+```
+- Clear error message
+- Actionable steps to resolve
+- Technical details available but not prominent
+- Primary action resolves the issue
+
+**Image Detail View (Full)**:
+```
+┌─────────────────────────────────────┐
+│ ╳                              1/4  │
+│                                     │
+│                                     │
+│         [  Full Image Display  ]    │
+│                                     │
+│                                     │
+│  Prompt: "a cute cat..."            │
+│  [← Previous]            [Next →]   │
+└─────────────────────────────────────┘
+```
+- Minimal chrome, focus on image
+- Navigation controls at bottom
+- Metadata below image
+- Click image or backdrop to close
+- Arrow keys for navigation
+
+### Escape Mechanisms
+
+**Every modal/overlay must have at least 3 ways to close**:
+1. **Escape key** - Always works, no exceptions
+2. **Close button** (╳) - Visible in top-right, 44×44px hit target
+3. **Backdrop click** - For non-critical modals
+4. **Primary action** - "Done", "Save", "Cancel" buttons
+
+### Accessibility
+
+- **Focus management**: Focus moves to modal on open, returns on close
+- **Keyboard navigation**: Tab cycles through modal elements
+- **Screen readers**: Modal has `role="dialog"`, `aria-labelledby`, `aria-describedby`
+- **Focus trap**: Can't tab out of modal to underlying UI
+- **Escape always works**: Even for critical modals (returns to safe state)
+
+### Animation Details
+
+```typescript
+const modalAnimationVariants = {
+  hidden: {
+    opacity: 0,
+    scale: 0.95,
+  },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.2,
+      ease: [0.4, 0, 0.2, 1], // ease-out
+    },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.95,
+    transition: {
+      duration: 0.15,
+      ease: [0.4, 0, 1, 1], // ease-in
+    },
+  },
+};
+```
+
+### When NOT to Use Modals
+
+❌ **Don't use modals for**:
+- Tool settings (use Parameters panel)
+- Non-critical notifications (use toasts)
+- Contextual actions (use popovers)
+- Settings/preferences (use side panel)
+- Simple confirmations that don't lose data (inline confirm)
+
+✅ **Use modals only for**:
+- Data loss prevention
+- Blocking errors
+- Focused multi-step flows
+- Full-screen immersive views
+
+---
+
 ## Implementation Notes
 
 ### Technology Stack
