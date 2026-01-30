@@ -10,6 +10,9 @@
  * - M4.4: Progress Indicators (deterministic progress)
  */
 
+// Provider (Phase 1 Integration)
+export { ExecutionServiceProvider } from "./ExecutionServiceProvider";
+
 // M4.1: Core hooks and commands
 export {
   setExecutionService,
