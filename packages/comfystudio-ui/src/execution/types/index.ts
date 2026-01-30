@@ -141,6 +141,7 @@ export type WorkflowExecution = {
   // Identity
   id: string;                          // Unique execution ID (uuid)
   toolId: string;
+  workflow: string;                    // ComfyUI workflow template name
 
   // State
   state: WorkflowExecutionState;

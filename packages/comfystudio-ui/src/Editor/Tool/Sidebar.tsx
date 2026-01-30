@@ -2,6 +2,7 @@ import { App } from "~/App";
 import { Editor } from "~/Editor";
 import { ToolRegistry } from "~/Tools/Registry";
 import { SettingRenderer } from "~/Tools/SettingRenderer";
+import { useTriggerExecution, type WorkflowTool } from "~/Tools";
 
 export namespace Sidebar {
   export function Section() {
@@ -32,7 +33,7 @@ export namespace Sidebar {
             if (cancelled) return;
 
             if (implementation?.SettingsPanel) {
-              setCustomPanel(() => implementation.SettingsPanel);
+              setCustomPanel(() => implementation.SettingsPanel!);
             } else {
               setCustomPanel(null);
             }
@@ -92,9 +93,66 @@ export namespace Sidebar {
                 setting={setting}
               />
             ))}
+
+            {/* Trigger button for workflow tools */}
+            {tool.category === "workflow" && (
+              <TriggerButton toolId={toolId} toolName={tool.name} />
+            )}
           </div>
         </App.Sidebar.Section>
       );
     }, [loading, tool, customPanel, toolId]);
+  }
+
+  /**
+   * Trigger button for workflow tools
+   *
+   * Dispatches execution command to service.
+   */
+  function TriggerButton({
+    toolId,
+    toolName,
+  }: {
+    toolId: string;
+    toolName: string;
+  }) {
+    const { trigger, isTriggering, lastError } = useTriggerExecution(toolId);
+
+    const handleTrigger = async () => {
+      const result = await trigger();
+
+      if (result.ok) {
+        console.info(
+          `[Tool] Started execution: ${result.executionId} (job: ${result.jobId})`
+        );
+        // TODO: Add toast notification when toast system is integrated
+      } else {
+        console.error(`[Tool] Failed to start execution:`, result.error);
+        // TODO: Add error toast when toast system is integrated
+      }
+    };
+
+    return (
+      <div className="flex w-full flex-col gap-2 pt-2">
+        <button
+          onClick={handleTrigger}
+          disabled={isTriggering}
+          className={classes(
+            "w-full rounded-md px-4 py-2 font-medium text-white transition-colors",
+            isTriggering
+              ? "cursor-not-allowed bg-blue-400"
+              : "bg-blue-500 hover:bg-blue-600 active:bg-blue-700"
+          )}
+        >
+          {isTriggering ? `Starting ${toolName}...` : `Start ${toolName}`}
+        </button>
+
+        {lastError && (
+          <div className="text-xs text-red-500">
+            Error: {lastError}
+          </div>
+        )}
+      </div>
+    );
   }
 }
