@@ -1,10 +1,10 @@
 /**
  * Workflow Runner Core
  *
- * Orchestrates execution lifecycle: queued → executing → completed/failed
+ * Orchestrates execution lifecycle: queued → executing → completed/failed/cancelled
  * Records all state transitions via History Store (source of truth)
  *
- * Milestone: M3.3 - Runner Core (Happy Path)
+ * Milestone: M3.4 - Cancellation + Failure Semantics
  */
 
 import type { WorkflowExecution } from "../types";
@@ -14,18 +14,27 @@ import type {
   RunnerDeps,
   RunnerOptions,
   RunnerStartResult,
+  RunnerCancelResult,
   ComfyUIJobStatus,
 } from "./types";
 
 /**
- * Pure runner implementation (happy path only - no cancellation)
+ * Pure runner implementation with cancellation support
  *
  * CONTRACT:
  * - All state transitions recorded via History Store
  * - Always reaches terminal state (no hangs)
  * - Tolerates transient ComfyUI failures
+ * - First terminal state wins (immutable once terminal)
+ * - Cancellation is separate terminal state (not failure)
  */
 export class PureWorkflowRunner implements WorkflowRunner {
+  // Track cancellation requests (in-memory only, not source of truth)
+  private cancellationRequests = new Map<string, boolean>();
+
+  // Track active jobs for cancellation
+  private activeJobs = new Map<string, { jobId: string; toolId: string }>();
+
   constructor(private deps: RunnerDeps) {}
 
   async start(
@@ -154,12 +163,22 @@ export class PureWorkflowRunner implements WorkflowRunner {
 
       log.info("Execution started", { executionId: execution.id, jobId });
 
+      // Track active job for cancellation
+      this.activeJobs.set(execution.id, {
+        jobId,
+        toolId: execution.toolId,
+      });
+
       // Step 5: Poll until terminal
       const terminalResult = await this.pollUntilTerminal(
         execution,
         jobId,
         options
       );
+
+      // Clean up tracking
+      this.activeJobs.delete(execution.id);
+      this.cancellationRequests.delete(execution.id);
 
       // Step 6: Record terminal state
       const terminalExecution: WorkflowExecution = {
@@ -172,6 +191,7 @@ export class PureWorkflowRunner implements WorkflowRunner {
 
       await history.recordExecution(execution.toolId, terminalExecution);
 
+      // Record error for failed executions (not for cancelled)
       if (terminalResult.state === "failed" && terminalResult.error) {
         await history.recordError(execution.toolId, execution.id, {
           category: "comfyui",
@@ -179,7 +199,7 @@ export class PureWorkflowRunner implements WorkflowRunner {
         });
       }
 
-      log.info("Execution completed", {
+      log.info("Execution terminal", {
         executionId: execution.id,
         state: terminalResult.state,
       });
@@ -224,16 +244,126 @@ export class PureWorkflowRunner implements WorkflowRunner {
   }
 
   /**
+   * Cancel execution
+   *
+   * CONTRACT:
+   * - Cancellation is a terminal state (not failure)
+   * - First terminal state wins (cannot cancel if already terminal)
+   * - Always unblocks queue (deterministic terminal outcome)
+   */
+  async cancel(
+    toolId: string,
+    executionId: string,
+    jobId?: string
+  ): Promise<RunnerCancelResult> {
+    const { history, clock, log, comfyui } = this.deps;
+
+    log.info("Cancellation requested", { toolId, executionId, jobId });
+
+    try {
+      // Check if execution already terminal via History Store (source of truth)
+      const replayResult = await history.replay(toolId);
+      const execution = replayResult.toolState.executions.get(executionId);
+
+      if (!execution) {
+        log.warn("Execution not found for cancellation", {
+          toolId,
+          executionId,
+        });
+        return {
+          ok: false,
+          error: {
+            code: "EXECUTION_NOT_FOUND",
+            message: `Execution ${executionId} not found`,
+          },
+        };
+      }
+
+      // Terminal immutability: cannot change terminal state
+      if (
+        execution.state === "completed" ||
+        execution.state === "failed" ||
+        execution.state === "cancelled"
+      ) {
+        log.info("Execution already terminal, ignoring cancel", {
+          executionId,
+          state: execution.state,
+        });
+
+        return {
+          ok: true,
+          executionId,
+          cancelled: false, // Already terminal
+        };
+      }
+
+      // Mark cancellation requested (for polling loop)
+      this.cancellationRequests.set(executionId, true);
+
+      // Try to cancel at ComfyUI (best effort)
+      const activeJob = this.activeJobs.get(executionId);
+      const effectiveJobId = jobId ?? activeJob?.jobId;
+
+      if (effectiveJobId) {
+        try {
+          await comfyui.cancel(effectiveJobId);
+          log.info("ComfyUI job cancelled", { executionId, jobId: effectiveJobId });
+        } catch (cancelError) {
+          log.warn("ComfyUI cancel failed (non-fatal)", {
+            executionId,
+            error: cancelError,
+          });
+        }
+      }
+
+      // Record cancelled state (if not actively polling, record immediately)
+      if (!activeJob) {
+        const cancelledExecution: WorkflowExecution = {
+          ...execution,
+          state: "cancelled",
+          completedAt: clock.now(),
+        };
+
+        await history.recordExecution(toolId, cancelledExecution);
+
+        log.info("Execution cancelled", { executionId });
+      } else {
+        // Polling loop will detect cancellation flag and record state
+        log.info("Cancellation flag set, polling loop will record", {
+          executionId,
+        });
+      }
+
+      return {
+        ok: true,
+        executionId,
+        cancelled: true,
+      };
+    } catch (error) {
+      log.error("Cancellation error", { executionId, error });
+
+      return {
+        ok: false,
+        error: {
+          code: "CANCEL_FAILED",
+          message: error instanceof Error ? error.message : "Cancel failed",
+          details: { error: String(error) },
+        },
+      };
+    }
+  }
+
+  /**
    * Poll ComfyUI status until terminal state reached
    *
-   * Returns terminal state info (completed or failed)
+   * Returns terminal state info (completed, failed, or cancelled)
    */
   private async pollUntilTerminal(
     execution: WorkflowExecution,
     jobId: string,
     options: RunnerOptions
   ): Promise<{
-    state: "completed" | "failed";
+    state: "completed" | "failed" | "cancelled";
     progress?: number;
     result?: any;
     error?: string;
@@ -243,6 +373,28 @@ export class PureWorkflowRunner implements WorkflowRunner {
     let lastProgress: number | undefined;
 
     while (true) {
+      // Check for cancellation request (first terminal wins)
+      if (this.cancellationRequests.get(execution.id)) {
+        log.info("Cancellation detected during poll", {
+          executionId: execution.id,
+        });
+
+        // Try to cancel job at ComfyUI (best effort)
+        try {
+          await comfyui.cancel(jobId);
+          log.info("ComfyUI job cancelled", { executionId: execution.id, jobId });
+        } catch (cancelError) {
+          log.warn("ComfyUI cancel failed (non-fatal)", {
+            executionId: execution.id,
+            error: cancelError,
+          });
+        }
+
+        return {
+          state: "cancelled",
+        };
+      }
+
       // Check max runtime timeout
       if (options.maxRuntimeMs) {
         const elapsed = clock.nowMs() - startTime;
