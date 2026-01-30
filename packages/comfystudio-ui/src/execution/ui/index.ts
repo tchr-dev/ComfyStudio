@@ -1,10 +1,20 @@
 /**
  * Workflow Execution UI Integration
  *
- * Trigger wiring, progress model, disable rules.
- * Connects user actions to execution system.
+ * React hooks for observing execution state and dispatching commands.
+ * Strict observation boundary: UI reads state, dispatches commands.
  *
- * Milestone: M4 - UI Integration
+ * Milestone: M4.1 - Runner ↔ UI Wiring
  */
 
-export {};
+export {
+  setExecutionService,
+  useExecutionState,
+  useExecutionCommands,
+  useExecutionEvents,
+  useExecutionsForTool,
+  useExecution,
+  useActiveExecutions,
+  useExecutionStatus,
+  useRehydrateOnMount,
+} from "./hooks";

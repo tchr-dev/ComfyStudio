@@ -14,9 +14,12 @@
  * - history/: JSONL writer, replay, prune, artifacts
  * - adapters/comfyui/: Submit, poll/subscribe, cancel, mapping
  * - runner/: Bridge FSM ↔ adapter ↔ history
- * - ui/: Trigger wiring, progress model, disable rules
+ * - ui/: Trigger wiring, progress model, disable rules (M4.1 ✅)
+ * - service/: Orchestration layer (M4.1 ✅)
  * - spatial/: Capture, normalize, revisions
  * - dev/: Development harness for simulation
  */
 
 export * from "./types";
+export * from "./service";
+export * from "./ui";
