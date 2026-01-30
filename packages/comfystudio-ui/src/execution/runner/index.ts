@@ -1,10 +1,22 @@
 /**
  * Workflow Execution Runner
  *
- * Orchestrates state ↔ adapter ↔ history.
- * Bridges pure state machine with I/O side effects.
+ * Orchestrates execution lifecycle: adapter → ComfyUI → history.
+ * Records all state transitions for crash-resilient replay.
  *
- * Milestone: M3 - Execution Runner
+ * Milestone: M3.3 - Runner Core (Happy Path)
  */
 
-export {};
+export { createWorkflowRunner, PureWorkflowRunner } from "./runner";
+export type {
+  WorkflowRunner,
+  RunnerDeps,
+  RunnerOptions,
+  RunnerStartResult,
+  RunnerCancelResult,
+  ComfyUIClientPort,
+  ComfyUIJobId,
+  ComfyUIJobStatus,
+  ClockPort,
+  LoggerPort,
+} from "./types";
