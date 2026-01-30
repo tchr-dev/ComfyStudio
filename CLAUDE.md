@@ -577,9 +577,133 @@ Set via Vite environment variables (prefix with `VITE_`):
 - `VITE_USE_STABILITY_PLUGIN` - Load Stability plugin
 - `VITE_GIT_HASH` - Auto-injected git commit hash
 
+## Workflow Execution System
+
+ComfyStudio has a production-grade workflow execution system in `src/execution/` with **306 comprehensive tests**. This system manages the full lifecycle of ComfyUI workflow executions from canvas interaction to completion.
+
+### Architecture Principles
+
+1. **Files-as-Truth**: History Store is the single source of truth. All execution state is persisted to JSONL files (`executions/{toolId}.jsonl`). UI can restart and fully rehydrate from history.
+
+2. **Observation Boundary**: UI never mutates execution state directly. Uses Event → Command pattern:
+   - UI dispatches commands (intent): `startExecution()`, `cancelExecution()`
+   - Runner owns truth (state transitions): Validates, submits, polls, records
+   - UI observes outcome: Via snapshots and events
+
+3. **Deterministic State Machine**: 7-state FSM with unidirectional flow:
+   ```
+   idle → armed → queued → executing → (completed | failed | cancelled)
+   ```
+
+4. **Pure Functions**: Core logic has no side effects:
+   - Adapter: Pure mapping (execution → ComfyUI prompt)
+   - State transitions: Pure FSM (no I/O)
+   - Spatial capture: Pure coordinate transforms
+
+### Module Structure
+
+```
+src/execution/
+├── types/              # Contract types (discriminated unions)
+├── state/              # Pure FSM + queue policies + revision tracking
+├── history/            # JSONL persistence (crash-resistant, atomic writes)
+├── adapters/comfyui/   # Pure ComfyUI adapter (deterministic mapping)
+├── runner/             # Runner lifecycle (submit → poll → terminal)
+├── spatial/            # Spatial input capture (normalized coordinates)
+├── service.ts          # Service orchestration layer
+└── ui/                 # React hooks + visualization + progress
+```
+
+### Usage Patterns
+
+**Initialize service** (once on app startup):
+```typescript
+import { createExecutionService, setExecutionService } from "~/execution";
+
+const service = createExecutionService(runner, history, config);
+setExecutionService(service);
+await service.rehydrate(); // Restore state from history
+```
+
+**Use in components**:
+```typescript
+import { useExecutionCommands, useExecutionState, useExecutionOverlays } from "~/execution/ui";
+
+function MyComponent() {
+  const { startExecution, cancelExecution } = useExecutionCommands();
+  const state = useExecutionState(); // Read-only
+  const overlays = useExecutionOverlays(); // Visual state for canvas
+
+  const handleStart = async () => {
+    const result = await startExecution({
+      id: "exec-123",
+      toolId: "generate",
+      state: "idle",
+      settings: { prompt: "A landscape" },
+      workflow: "txt2img",
+    });
+  };
+}
+```
+
+**Capture spatial input**:
+```typescript
+import { capturePoint, captureSelection } from "~/execution/spatial";
+
+// Captures canvas interaction and normalizes to 0-1 range
+const result = capturePoint({ x: 500, y: 400 }, {
+  toolId: "inpaint",
+  reason: "explicit",
+  currentRevision: 0,
+  transform: { position, scale, dimensions },
+});
+
+if (result.ok) {
+  // result.snapshot.data: { type: "point", data: { x: 0.26, y: 0.37 } }
+}
+```
+
+### Key Features
+
+- **Crash-Resistant History**: JSONL with atomic writes, fsync, temp files
+- **Spatial Input Capture**: Normalized coordinates (0-1 range), pan/zoom invariant
+- **Revision Tracking**: Interaction tools always increment, explicit tools only on data change
+- **Visualization Overlays**: Canvas overlays with bounds, colors, progress
+- **Progress Indicators**: Deterministic progress from timestamps (no estimations)
+- **Cancellation**: Best-effort with terminal immutability (first terminal state wins)
+- **Recovery**: N consecutive missing job confirmations before failing
+
+### Testing
+
+```bash
+# Run all execution tests (306 tests)
+yarn test src/execution --run
+
+# Specific test suites
+yarn test src/execution/state       # FSM, policies, revisions (67 tests)
+yarn test src/execution/history     # JSONL, replay, prune (65 tests)
+yarn test src/execution/runner      # Lifecycle, cancel, recovery (61 tests)
+yarn test src/execution/spatial     # Coordinate capture (35 tests)
+yarn test src/execution/ui          # Hooks, visualization, progress (70 tests)
+```
+
+### Integration Notes
+
+The execution system is **ready for integration** but not yet wired into the existing UI. Integration work needed:
+
+1. Initialize service on app startup
+2. Wire tool triggers to `startExecution()`
+3. Capture spatial input from canvas interactions
+4. Render execution overlays on canvas
+5. Display progress indicators in UI
+6. Handle execution events (toasts, notifications)
+
+See `src/execution/README.md` for comprehensive documentation.
+
 ## Project History Context
 
 - Originally DreamStudio (Vue.js → React rewrite in Dec 2022)
 - Forked to ComfyStudio to focus on open-source ComfyUI integration
 - Plugin system created to support multiple inference backends
 - Recent work focuses on dock-based UI architecture (see `docs/plans/`)
+- **2026-01**: Production-grade workflow execution system (M0-M4, 306 tests)
