@@ -100,6 +100,12 @@ export type RunnerOptions = {
    * Default: false (only emit on change)
    */
   emitProgressHeartbeat?: boolean;
+
+  /**
+   * Number of consecutive "missing" observations required to mark job as failed
+   * Default: 2 (per ADR-0009)
+   */
+  missingJobConfirmations?: number;
 };
 
 // ============================================================================

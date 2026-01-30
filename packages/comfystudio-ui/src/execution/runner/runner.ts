@@ -372,6 +372,10 @@ export class PureWorkflowRunner implements WorkflowRunner {
     const startTime = clock.nowMs();
     let lastProgress: number | undefined;
 
+    // Missing job confirmation tracking (per ADR-0009)
+    const requiredMissingConfirmations = options.missingJobConfirmations ?? 2;
+    let consecutiveMissingCount = 0;
+
     while (true) {
       // Check for cancellation request (first terminal wins)
       if (this.cancellationRequests.get(execution.id)) {
@@ -431,6 +435,9 @@ export class PureWorkflowRunner implements WorkflowRunner {
       switch (status.state) {
         case "queued":
         case "running": {
+          // Reset missing counter (job is active)
+          consecutiveMissingCount = 0;
+
           // Still processing - record progress if changed
           if (status.state === "running" && status.progress !== undefined) {
             const progressChanged = status.progress !== lastProgress;
@@ -494,15 +501,39 @@ export class PureWorkflowRunner implements WorkflowRunner {
         }
 
         case "missing": {
-          log.error("Job missing (backend may have restarted)", {
+          // Increment consecutive missing count
+          consecutiveMissingCount++;
+
+          log.warn("Job missing observation", {
             executionId: execution.id,
             jobId,
+            consecutiveMissingCount,
+            requiredConfirmations: requiredMissingConfirmations,
           });
 
-          return {
-            state: "failed",
-            error: "Job not found (backend may have restarted)",
-          };
+          // Check if we have enough confirmations (per ADR-0009)
+          if (consecutiveMissingCount >= requiredMissingConfirmations) {
+            log.error("Job confirmed missing after N consecutive checks", {
+              executionId: execution.id,
+              jobId,
+              consecutiveMissingCount,
+            });
+
+            return {
+              state: "failed",
+              error: `Job not found after ${consecutiveMissingCount} consecutive checks (backend may have restarted)`,
+            };
+          }
+
+          // Not enough confirmations yet - wait and retry
+          log.debug("Waiting for more missing confirmations", {
+            executionId: execution.id,
+            consecutiveMissingCount,
+            remaining: requiredMissingConfirmations - consecutiveMissingCount,
+          });
+
+          await this.sleep(options.pollIntervalMs);
+          break;
         }
       }
     }
