@@ -1,10 +1,23 @@
 /**
  * ComfyUI Adapter
  *
- * Submit, poll/subscribe, cancel, map events (network I/O).
- * Bridges execution system with ComfyUI backend.
+ * Pure mapping layer: WorkflowExecution → ComfyUIPromptPayload.
+ * Deterministic, no I/O, no side effects.
  *
- * Milestone: M3 - ComfyUI Integration
+ * Milestone: M3.2 - Adapter Implementation
  */
 
-export {};
+export { createComfyUIAdapter, PureComfyUIAdapter } from "./adapter";
+export { createHasher, stableStringify, hashUtf8 } from "./hasher";
+export type {
+  ComfyUIPromptAdapter,
+  AdapterContext,
+  BuildPromptResult,
+  ComfyUIBuildResult,
+  ComfyUIPromptPayload,
+  ExecutionError,
+  ExecutionErrorCode,
+  WorkflowTemplate,
+  WorkflowTemplateRegistry,
+  HasherPort,
+} from "./types";
