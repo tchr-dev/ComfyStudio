@@ -1,10 +1,11 @@
 /**
  * Spatial Input Capture
  *
- * Capture events, normalize, revisions.
- * Handles canvas interaction → spatial input conversion.
+ * Captures canvas interactions as typed spatial inputs with revision tracking.
  *
- * Milestone: M4 - Spatial Capture
+ * Milestone: M4.2 - Spatial Input Capture
  */
 
-export {};
+export * from "./types";
+export * from "./normalize";
+export * from "./capture";
