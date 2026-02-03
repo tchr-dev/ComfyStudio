@@ -2,9 +2,31 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Quick Reference
+
+| Command | Purpose |
+|---------|---------|
+| `yarn start` | Start ComfyUI + frontend together |
+| `yarn dev` | Start frontend only (dev mode) |
+| `yarn build` | Build all packages |
+| `yarn comfystudio-ui test` | Run all tests |
+| `yarn comfystudio-ui lint:fix` | Fix linting issues |
+
 ## Project Overview
 
 ComfyStudio is a ComfyUI-focused fork of StableStudio that provides a polished, DreamStudio-style UI for ComfyUI's powerful node-based backend. It's a monorepo built with TypeScript, React, and Vite, organized as Yarn workspaces with a plugin-based architecture for different inference backends.
+
+## Prerequisites
+
+- Node.js 18+ (check: `node --version`)
+- Yarn 3.3.0+ (included via packageManager field)
+- Python 3.10+ with pip (for ComfyUI backend)
+- comfy-cli: `pip install comfy-cli`
+
+**First-time setup:**
+```bash
+yarn install  # Install all dependencies
+```
 
 ## Development Commands
 
@@ -541,6 +563,15 @@ Use `GlobalState.shallow` to limit rerenders when selecting multiple state slice
 - ❌ Don't export state directly - export hooks that access state
 - ❌ Don't use `../` imports for root domains - use `~/` alias
 - ❌ Don't create new files when functionality fits in existing domains
+
+## Gotchas & Common Issues
+
+- **Tool ID must match filename**: `my-tool.ts` must have `id: "my-tool"` (kebab-case)
+- **Read before Edit/Write**: File tools require reading a file before modifying it
+- **Execution system not integrated**: Production-ready but UI wiring is TODO (see `src/execution/INTEGRATION_PLAN.md`)
+- **Plugin hot-reload**: Example plugin supports hot-reloading, others require restart
+- **CORS required**: ComfyUI must run with `--enable-cors-header` flag
+- **Port conflicts**: Frontend uses 3000, ComfyUI uses 8188 - ensure ports are free
 
 ## ComfyUI Integration
 
