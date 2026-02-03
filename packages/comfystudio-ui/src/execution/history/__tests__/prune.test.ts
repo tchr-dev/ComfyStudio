@@ -38,6 +38,7 @@ describe("Pruning", () => {
       const queued: WorkflowExecution = {
         id: "exec-1",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "queued",
         settings: {},
         queuedAt: new Date("2020-01-01T00:00:00Z"), // Very old
@@ -59,6 +60,7 @@ describe("Pruning", () => {
       const executing: WorkflowExecution = {
         id: "exec-1",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "executing",
         settings: {},
         queuedAt: new Date("2020-01-01T00:00:00Z"),
@@ -84,6 +86,7 @@ describe("Pruning", () => {
         const exec: WorkflowExecution = {
           id: `exec-${i}`,
           toolId: "test-tool",
+        workflow: "test-workflow",
           state: "completed",
           settings: {},
           queuedAt: new Date(`2024-01-0${i}T00:00:00Z`),
@@ -111,6 +114,7 @@ describe("Pruning", () => {
         const exec: WorkflowExecution = {
           id: `exec-${i}`,
           toolId: "test-tool",
+        workflow: "test-workflow",
           state: "completed",
           settings: {},
           queuedAt: new Date(`2024-01-0${i}T00:00:00Z`),
@@ -143,6 +147,7 @@ describe("Pruning", () => {
       const oldExec: WorkflowExecution = {
         id: "exec-old",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "completed",
         settings: {},
         queuedAt: new Date(oldTime),
@@ -152,6 +157,7 @@ describe("Pruning", () => {
       const recentExec: WorkflowExecution = {
         id: "exec-recent",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "completed",
         settings: {},
         queuedAt: new Date(recentTime),
@@ -179,6 +185,7 @@ describe("Pruning", () => {
       const exec1: WorkflowExecution = {
         id: "exec-1",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "completed",
         settings: {},
         spatialInput: {
@@ -193,6 +200,7 @@ describe("Pruning", () => {
       const exec2: WorkflowExecution = {
         id: "exec-2",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "completed",
         settings: {},
         spatialInput: {
@@ -207,6 +215,7 @@ describe("Pruning", () => {
       const exec3: WorkflowExecution = {
         id: "exec-3",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "completed",
         settings: {},
         spatialInput: {
@@ -242,6 +251,7 @@ describe("Pruning", () => {
         const exec: WorkflowExecution = {
           id: `exec-${i}`,
           toolId: "test-tool",
+        workflow: "test-workflow",
           state: "completed",
           settings: {},
           queuedAt: new Date(`2024-01-${i.toString().padStart(2, "0")}T00:00:00Z`),
@@ -284,6 +294,7 @@ describe("Pruning", () => {
       const oldExec: WorkflowExecution = {
         id: "exec-old",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "completed",
         settings: {},
         queuedAt: new Date("2020-01-01T00:00:00Z"), // Very old
@@ -293,6 +304,7 @@ describe("Pruning", () => {
       const recentExec: WorkflowExecution = {
         id: "exec-recent",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "completed",
         settings: {},
         queuedAt: new Date(), // Recent
@@ -362,6 +374,7 @@ describe("Pruning", () => {
         const exec: WorkflowExecution = {
           id: `exec-${i}`,
           toolId: "test-tool",
+        workflow: "test-workflow",
           state: "completed",
           settings: {},
           queuedAt: new Date(`2024-01-0${i}T00:00:00Z`),

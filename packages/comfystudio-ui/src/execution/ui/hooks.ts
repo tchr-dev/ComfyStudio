@@ -11,10 +11,8 @@ import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import type {
   ExecutionService,
   ExecutionStateSnapshot,
-  ExecutionEvent,
-  ExecutionEventListener,
 } from "../service";
-import type { WorkflowExecution } from "../types";
+import type { WorkflowExecution, ExecutionEvent, ExecutionEventListener } from "../types";
 
 // ============================================================================
 // Service Context (injected via provider)
@@ -218,7 +216,9 @@ export function useExecutionStatus(
     }
 
     const status =
-      execution.state === "queued" || execution.state === "executing"
+      execution.state === "armed" ||
+      execution.state === "queued" ||
+      execution.state === "executing"
         ? "running"
         : execution.state === "idle"
         ? "idle"

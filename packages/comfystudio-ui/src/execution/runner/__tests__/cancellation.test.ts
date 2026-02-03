@@ -421,6 +421,7 @@ class MockHistoryStore implements HistoryStore {
 
   async replay(toolId: string): Promise<{
     toolState: ToolExecutionState;
+    executions: Map<string, any>;
     errors: Map<string, any>;
     artifacts: Map<string, any>;
     diagnostics: any[];
@@ -428,8 +429,35 @@ class MockHistoryStore implements HistoryStore {
     const records = this.recorded.get(toolId) ?? [];
 
     const executions = new Map<string, WorkflowExecution>();
+    const executionRecords = new Map<string, any>();
     for (const record of records) {
       executions.set(record.id, record);
+      // Mock ExecutionRecordV1 format
+      executionRecords.set(record.id, {
+        v: 1,
+        type: "execution",
+        executionId: record.id,
+        toolId: record.toolId,
+        state: record.state,
+        revision: record.spatialInput?.revision ?? 0,
+        captured: {
+          settings: record.settings,
+          spatialInput: record.spatialInput?.data,
+        },
+        timestamps: {
+          queuedAt: record.queuedAt?.toISOString() ?? new Date().toISOString(),
+          startedAt: record.startedAt?.toISOString() ?? null,
+          endedAt: record.completedAt?.toISOString() ?? null,
+        },
+        progress: record.progress ?? 0,
+        result: record.result ?? null,
+        errorRef: {
+          executionErrorId: record.error ?? null,
+        },
+        comfyui: {
+          promptId: record.comfyuiPromptId ?? null,
+        },
+      });
     }
 
     const toolState: ToolExecutionState = {
@@ -441,6 +469,7 @@ class MockHistoryStore implements HistoryStore {
 
     return {
       toolState,
+      executions: executionRecords,
       errors: new Map(),
       artifacts: new Map(),
       diagnostics: [],

@@ -309,6 +309,7 @@ function convertToWorkflowExecutions(
     const execution: WorkflowExecution = {
       id: executionId,
       toolId: record.toolId,
+      workflow: "unknown", // Historical records don't have workflow field
       state,
       settings: record.captured.settings,
       spatialInput: record.captured.spatialInput
@@ -325,17 +326,13 @@ function convertToWorkflowExecutions(
         ? new Date(record.timestamps.startedAt)
         : undefined,
       completedAt:
-        record.state === "completed" && record.timestamps.endedAt
-          ? new Date(record.timestamps.endedAt)
-          : undefined,
-      failedAt:
-        record.state === "failed" && record.timestamps.endedAt
+        ["completed", "failed", "cancelled"].includes(record.state) && record.timestamps.endedAt
           ? new Date(record.timestamps.endedAt)
           : undefined,
       progress: record.progress,
       result: record.result,
-      errorId: record.errorRef.executionErrorId ?? undefined,
-      comfyPromptId: record.comfyui.promptId ?? undefined,
+      error: record.errorRef.executionErrorId ?? undefined,
+      comfyuiPromptId: record.comfyui.promptId ?? undefined,
     };
 
     executions.set(executionId, execution);

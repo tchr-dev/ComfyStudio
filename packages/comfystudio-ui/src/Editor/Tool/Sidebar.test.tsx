@@ -212,7 +212,7 @@ describe("Editor.Tool.Sidebar", () => {
         description: "Pan canvas",
         icon: "Hand",
         category: "canvas-interaction",
-        cursor: "grab",
+        cursor: "default",
         settings: [],
       };
 

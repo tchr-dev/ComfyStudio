@@ -39,6 +39,7 @@ describe("Replay", () => {
       const execution: WorkflowExecution = {
         id: "exec-1",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "queued",
         settings: { prompt: "test" },
         queuedAt: new Date("2024-01-01T00:00:00Z"),
@@ -61,6 +62,7 @@ describe("Replay", () => {
       const execution: WorkflowExecution = {
         id: "exec-1",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "completed",
         settings: {},
         queuedAt: new Date(),
@@ -89,6 +91,7 @@ describe("Replay", () => {
       const exec1: WorkflowExecution = {
         id: "exec-1",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "queued",
         settings: {},
         queuedAt: new Date("2024-01-01T00:00:00Z"),
@@ -97,6 +100,7 @@ describe("Replay", () => {
       const exec2: WorkflowExecution = {
         id: "exec-2",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "queued",
         settings: {},
         queuedAt: new Date("2024-01-01T00:00:01Z"),
@@ -105,6 +109,7 @@ describe("Replay", () => {
       const exec3: WorkflowExecution = {
         id: "exec-3",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "queued",
         settings: {},
         queuedAt: new Date("2024-01-01T00:00:02Z"),
@@ -124,6 +129,7 @@ describe("Replay", () => {
       const queued: WorkflowExecution = {
         id: "exec-1",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "queued",
         settings: {},
         queuedAt: new Date(),
@@ -132,6 +138,7 @@ describe("Replay", () => {
       const executing: WorkflowExecution = {
         id: "exec-2",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "executing",
         settings: {},
         queuedAt: new Date(),
@@ -151,6 +158,7 @@ describe("Replay", () => {
       const completed: WorkflowExecution = {
         id: "exec-1",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "completed",
         settings: {},
         queuedAt: new Date(),
@@ -161,11 +169,12 @@ describe("Replay", () => {
       const failed: WorkflowExecution = {
         id: "exec-2",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "failed",
         settings: {},
         queuedAt: new Date(),
         startedAt: new Date(),
-        failedAt: new Date(),
+        completedAt: new Date(),
       };
 
       await recordExecution(ports, paths, "test-tool", completed);
@@ -184,6 +193,7 @@ describe("Replay", () => {
       const execution: WorkflowExecution = {
         id: "exec-1",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "queued",
         settings: { version: 1 },
         queuedAt: new Date(),
@@ -222,6 +232,7 @@ describe("Replay", () => {
         type: "execution",
         executionId: "exec-1",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "executing", // Non-terminal
         revision: 0,
         captured: { settings: {} },
@@ -258,6 +269,7 @@ describe("Replay", () => {
       const execution: WorkflowExecution = {
         id: "exec-1",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "queued",
         settings: {},
         queuedAt: new Date(),
@@ -293,6 +305,7 @@ describe("Replay", () => {
         type: "execution",
         // Missing executionId!
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "queued",
       };
 
@@ -329,12 +342,13 @@ describe("Replay", () => {
       const execution: WorkflowExecution = {
         id: "exec-1",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "failed",
         settings: {},
-        errorId,
+        error: errorId, // Use error ID, not message
         queuedAt: new Date(),
         startedAt: new Date(),
-        failedAt: new Date(),
+        completedAt: new Date(),
       };
 
       await recordExecution(ports, paths, "test-tool", execution);
@@ -345,18 +359,19 @@ describe("Replay", () => {
       expect(result.errors.has(errorId)).toBe(true);
 
       const replayedExec = result.toolState.executions.get("exec-1")!;
-      expect(replayedExec.errorId).toBe(errorId);
+      expect(replayedExec.error).toBe(errorId);
     });
 
     it("warns about missing error references", async () => {
       const execution: WorkflowExecution = {
         id: "exec-1",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "failed",
         settings: {},
-        errorId: "missing-error-id",
+        error: "missing-error-id",
         queuedAt: new Date(),
-        failedAt: new Date(),
+        completedAt: new Date(),
       };
 
       await recordExecution(ports, paths, "test-tool", execution);

@@ -364,6 +364,8 @@ export function getProgressColor(state: WorkflowExecution["state"]): string {
   switch (state) {
     case "idle":
       return "bg-slate-400";
+    case "armed":
+      return "bg-amber-400"; // Same as queued
     case "queued":
       return "bg-amber-400";
     case "executing":

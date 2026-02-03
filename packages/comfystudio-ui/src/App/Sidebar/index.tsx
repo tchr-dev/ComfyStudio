@@ -6,12 +6,14 @@ import { Theme } from "~/Theme";
 import { Resizer } from "./Resizer";
 import { Section } from "./Section";
 import { Shortcuts } from "./Shortcut";
+import { Tab, Tabs } from "./Tab";
 
 export * from "./Sidebars";
 
 export type Sidebar = {
   visible: boolean;
   width: number;
+  tab?: string;
 };
 
 export function Sidebar({
@@ -45,12 +47,14 @@ export function Sidebar({
 }
 
 export declare namespace Sidebar {
-  export { Section, Shortcuts };
+  export { Section, Shortcuts, Tab, Tabs };
 }
 
 export namespace Sidebar {
   Sidebar.Section = Section;
   Sidebar.Shortcuts = Shortcuts;
+  Sidebar.Tab = Tab;
+  Sidebar.Tabs = Tabs;
 
   export type Props = { position: Position };
   export type Position = "left" | "right";

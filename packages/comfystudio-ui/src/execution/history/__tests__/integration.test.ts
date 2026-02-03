@@ -27,6 +27,7 @@ describe("HistoryStore Integration", () => {
       const execution: WorkflowExecution = {
         id: "exec-1",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "queued",
         settings: { prompt: "test" },
         queuedAt: new Date("2024-01-01T00:00:00Z"),
@@ -47,8 +48,8 @@ describe("HistoryStore Integration", () => {
 
       // Update to failed with error
       execution.state = "failed";
-      execution.failedAt = new Date("2024-01-01T00:01:00Z");
-      execution.errorId = errorId;
+      execution.completedAt = new Date("2024-01-01T00:01:00Z");
+      execution.error = `Error: ${errorId}`;
       await store.recordExecution("test-tool", execution);
 
       // Replay
@@ -59,7 +60,7 @@ describe("HistoryStore Integration", () => {
 
       const replayedExec = replay1.toolState.executions.get("exec-1")!;
       expect(replayedExec.state).toBe("failed");
-      expect(replayedExec.errorId).toBe(errorId);
+      expect(replayedExec.error).toContain(errorId);
 
       // Add more executions
       for (let i = 2; i <= 10; i++) {
@@ -67,6 +68,7 @@ describe("HistoryStore Integration", () => {
         const exec: WorkflowExecution = {
           id: `exec-${i}`,
           toolId: "test-tool",
+          workflow: "test-workflow",
           state: "completed",
           settings: {},
           queuedAt: new Date(`2024-01-${day}T00:00:00Z`),
@@ -100,6 +102,7 @@ describe("HistoryStore Integration", () => {
       const execA: WorkflowExecution = {
         id: "exec-a1",
         toolId: "tool-a",
+        workflow: "test-workflow",
         state: "completed",
         settings: {},
         queuedAt: new Date(),
@@ -111,6 +114,7 @@ describe("HistoryStore Integration", () => {
       const execB: WorkflowExecution = {
         id: "exec-b1",
         toolId: "tool-b",
+        workflow: "test-workflow",
         state: "completed",
         settings: {},
         queuedAt: new Date(),
@@ -142,6 +146,7 @@ describe("HistoryStore Integration", () => {
         const exec: WorkflowExecution = {
           id: `exec-${toolId}`,
           toolId,
+          workflow: "test-workflow",
           state: "completed",
           settings: {},
           queuedAt: new Date(),
@@ -166,6 +171,7 @@ describe("HistoryStore Integration", () => {
       const queued: WorkflowExecution = {
         id: "exec-queued",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "queued",
         settings: {},
         queuedAt: new Date(),
@@ -174,6 +180,7 @@ describe("HistoryStore Integration", () => {
       const completed: WorkflowExecution = {
         id: "exec-completed",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "completed",
         settings: {},
         queuedAt: new Date(),

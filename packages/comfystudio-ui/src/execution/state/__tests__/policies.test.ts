@@ -155,8 +155,8 @@ describe("Run Policies", () => {
 
     it("clears entire queue when replacing", () => {
       // This requires manually adding to queue since replace cancels
-      const exec1 = queue.createExecution(tool.id, {});
-      const exec2 = queue.createExecution(tool.id, {});
+      const exec1 = queue.createExecution(tool.id, tool.workflow, {});
+      const exec2 = queue.createExecution(tool.id, tool.workflow, {});
 
       ops.enqueueExecution(exec1, {});
       ops.enqueueExecution(exec2, {});

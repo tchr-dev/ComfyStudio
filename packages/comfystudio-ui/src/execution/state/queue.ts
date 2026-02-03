@@ -23,6 +23,7 @@ import * as guards from "./guards";
  */
 export function createExecution(
   toolId: string,
+  workflow: string,
   settings: Record<string, any>,
   spatialInput?: SpatialInputSnapshot
 ): WorkflowExecution {
@@ -32,6 +33,7 @@ export function createExecution(
     id,
     toolId,
     state: "idle",
+    workflow,
     settings,
     spatialInput,
   };
@@ -95,7 +97,7 @@ export function enqueueRun(
   }
 
   // Create and enqueue execution
-  const execution = createExecution(tool.id, settings, spatialInput);
+  const execution = createExecution(tool.id, tool.workflow, settings, spatialInput);
 
   // Enqueue the execution
   ops.enqueueExecution(execution, settings, spatialInput);

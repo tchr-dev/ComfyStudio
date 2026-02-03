@@ -12,7 +12,7 @@
  * Milestone: M4.1 - Runner ↔ UI Wiring
  */
 
-import type { WorkflowExecution } from "./types";
+import type { WorkflowExecution, ExecutionEvent as CanonicalExecutionEvent, ExecutionEventListener as CanonicalExecutionEventListener } from "./types";
 import type { HistoryStore } from "./history/api";
 import type { WorkflowRunner, RunnerDeps, RunnerOptions } from "./runner/types";
 import type { AdapterContext } from "./adapters/comfyui/types";
@@ -70,9 +70,10 @@ export type ExecutionStateSnapshot = {
 };
 
 /**
- * Execution event (emitted on state changes)
+ * Service-level execution events (simplified for UI layer)
+ * Note: Full execution events are defined in types/index.ts
  */
-export type ExecutionEvent =
+type ServiceExecutionEvent =
   | { type: "execution_started"; executionId: string; toolId: string; jobId: string }
   | { type: "execution_progress"; executionId: string; toolId: string; progress: number }
   | { type: "execution_completed"; executionId: string; toolId: string }
@@ -81,9 +82,9 @@ export type ExecutionEvent =
   | { type: "service_error"; error: string };
 
 /**
- * Execution event listener
+ * Service event listener
  */
-export type ExecutionEventListener = (event: ExecutionEvent) => void;
+type ServiceExecutionEventListener = (event: ServiceExecutionEvent) => void;
 
 // ============================================================================
 // Execution Service
@@ -125,7 +126,7 @@ export interface ExecutionService {
   /**
    * Subscribe to execution events
    */
-  subscribe(listener: ExecutionEventListener): () => void;
+  subscribe(listener: CanonicalExecutionEventListener): () => void;
 
   /**
    * Rehydrate state from history (on app restart)
@@ -151,7 +152,7 @@ export function createExecutionService(
   config: ExecutionServiceConfig
 ): ExecutionService {
   // Event listeners
-  const listeners = new Set<ExecutionEventListener>();
+  const listeners = new Set<CanonicalExecutionEventListener>();
 
   // Active jobs tracking (for UI)
   const activeJobs = new Map<string, { toolId: string; jobId: string }>();
@@ -163,10 +164,12 @@ export function createExecutionService(
   /**
    * Emit event to all listeners
    */
-  function emit(event: ExecutionEvent): void {
+  function emit(event: ServiceExecutionEvent): void {
     listeners.forEach((listener) => {
       try {
-        listener(event);
+        // Note: ServiceExecutionEvent is a simplified subset of CanonicalExecutionEvent
+        // We cast here as the service layer emits simplified events for now
+        listener(event as any);
       } catch (error) {
         console.error("Event listener error:", error);
       }
@@ -232,7 +235,7 @@ export function createExecutionService(
                   type: "execution_failed",
                   executionId: execution.id,
                   toolId: execution.toolId,
-                  error: finalExecution.error ?? "Unknown error",
+                  error: finalExecution.errorRef.executionErrorId ?? "Unknown error",
                 });
                 break;
               case "cancelled":
@@ -302,21 +305,22 @@ export function createExecutionService(
           // If execution already failed during validation, return early
           if (currentExecution.state === "failed") {
             status = "error";
+            const errorMessage = currentExecution.errorRef.executionErrorId ?? "Execution failed";
             lastError = {
               executionId: execution.id,
-              error: currentExecution.error ?? "Execution failed",
+              error: errorMessage,
             };
 
             emit({
               type: "execution_failed",
               executionId: execution.id,
               toolId: execution.toolId,
-              error: currentExecution.error ?? "Execution failed",
+              error: errorMessage,
             });
 
             return {
               ok: false,
-              error: currentExecution.error ?? "Execution failed",
+              error: errorMessage,
             };
           }
         }
@@ -418,7 +422,13 @@ export function createExecutionService(
   async function getSnapshot(): Promise<ExecutionStateSnapshot> {
     try {
       // Replay all tools from history
-      const executionsByTool = await history.replayAll();
+      const toolStates = await history.replayAll();
+
+      // Transform ToolExecutionState map to execution map
+      const executionsByTool = new Map<string, Map<string, WorkflowExecution>>();
+      for (const [toolId, toolState] of toolStates) {
+        executionsByTool.set(toolId, toolState.executions);
+      }
 
       return {
         executionsByTool,
@@ -444,7 +454,7 @@ export function createExecutionService(
   /**
    * Subscribe to execution events
    */
-  function subscribe(listener: ExecutionEventListener): () => void {
+  function subscribe(listener: CanonicalExecutionEventListener): () => void {
     listeners.add(listener);
 
     // Return unsubscribe function

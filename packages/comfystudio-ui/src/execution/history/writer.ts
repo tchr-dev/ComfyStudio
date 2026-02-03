@@ -54,15 +54,15 @@ export async function recordExecution(
     timestamps: {
       queuedAt: execution.queuedAt?.toISOString() ?? ports.clock.now(),
       startedAt: execution.startedAt?.toISOString() ?? null,
-      endedAt: execution.completedAt?.toISOString() ?? execution.failedAt?.toISOString() ?? null,
+      endedAt: execution.completedAt?.toISOString() ?? null,
     },
     progress: execution.progress ?? 0,
     result: execution.result ?? null,
     errorRef: {
-      executionErrorId: execution.errorId ?? null,
+      executionErrorId: execution.error ?? null,
     },
     comfyui: {
-      promptId: execution.comfyPromptId ?? null,
+      promptId: execution.comfyuiPromptId ?? null,
     },
   };
 

@@ -29,6 +29,7 @@ describe("Execution Visualization", () => {
   ): WorkflowExecution => ({
     id,
     toolId: "test-tool",
+    workflow: "test-workflow",
     state,
     settings: {},
     ...overrides,

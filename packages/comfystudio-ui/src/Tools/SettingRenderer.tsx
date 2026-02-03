@@ -16,10 +16,10 @@ export function SettingRenderer({ setting, toolId }: SettingRendererProps) {
 
   // Initialize with default if no value set
   useEffect(() => {
-    if (value === undefined) {
+    if (value === undefined && setting.type !== "custom") {
       ToolState.initializeDefaults(toolId, { [setting.id]: setting.default });
     }
-  }, [value, setting.default, toolId, setting.id]);
+  }, [value, setting, toolId]);
 
   switch (setting.type) {
     case "slider":

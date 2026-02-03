@@ -8,7 +8,8 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { createExecutionService, setExecutionService } from "../service";
+import { createExecutionService } from "../service";
+import { setExecutionService } from "./hooks";
 import { createWorkflowRunner } from "../runner/runner";
 import { createHistoryStore } from "../history/api";
 import { createComfyUIAdapter } from "../adapters/comfyui/adapter";
@@ -353,7 +354,12 @@ export function ExecutionServiceProvider({ children }: React.PropsWithChildren) 
         });
 
         // Load workflow templates
-        const templates = loadWorkflowTemplates();
+        const templatesMap = loadWorkflowTemplates();
+
+        // Create template registry
+        const templates = {
+          getTemplate: (workflowId: string) => templatesMap.get(workflowId),
+        };
 
         // Create service
         const service = createExecutionService(runner, history, {

@@ -31,6 +31,7 @@ describe("Writer Operations", () => {
       const execution: WorkflowExecution = {
         id: "exec-1",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "queued",
         settings: { prompt: "test" },
         queuedAt: new Date("2024-01-01T00:00:00Z"),
@@ -56,6 +57,7 @@ describe("Writer Operations", () => {
       const execution: WorkflowExecution = {
         id: "exec-1",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "queued",
         settings: {},
         spatialInput: {
@@ -89,6 +91,7 @@ describe("Writer Operations", () => {
       const execution: WorkflowExecution = {
         id: "exec-1",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "queued",
         settings: {},
         queuedAt: new Date(),
@@ -127,6 +130,7 @@ describe("Writer Operations", () => {
       const execution: WorkflowExecution = {
         id: "exec-1",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "executing",
         settings: {},
         progress: 50,
@@ -269,6 +273,7 @@ describe("Writer Operations", () => {
       const execution: WorkflowExecution = {
         id: "exec-1",
         toolId: "test-tool",
+        workflow: "test-workflow",
         state: "completed",
         settings: { prompt: "test", steps: 20 },
         spatialInput: {

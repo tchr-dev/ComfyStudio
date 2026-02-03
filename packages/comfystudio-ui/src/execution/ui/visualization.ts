@@ -211,10 +211,14 @@ function executionToOverlay(
   executionId: string,
   execution: WorkflowExecution
 ): ExecutionOverlay {
+  // Map "armed" state to "queued" for visualization (they're visually similar)
+  const visualState: ExecutionVisualState =
+    execution.state === "armed" ? "queued" : execution.state;
+
   const overlay: ExecutionOverlay = {
     executionId,
     toolId,
-    state: execution.state,
+    state: visualState,
     progress: execution.progress,
     error: execution.error,
     queuedAt: execution.queuedAt,
