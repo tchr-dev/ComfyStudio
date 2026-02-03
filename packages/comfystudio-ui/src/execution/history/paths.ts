@@ -8,7 +8,13 @@
  */
 
 import type { HistoryStorePaths } from "./types";
-import { join } from "path";
+
+/**
+ * Join path segments (cross-platform, browser-safe)
+ */
+export function joinPath(...segments: string[]): string {
+  return segments.join("/").replace(/\/+/g, "/");
+}
 
 /**
  * Create path helpers for given workspace root
@@ -34,37 +40,37 @@ import { join } from "path";
  *             errors.jsonl
  */
 export function createPaths(workspaceRoot: string): HistoryStorePaths {
-  const root = join(workspaceRoot, "history", "v1");
+  const root = joinPath(workspaceRoot, "history", "v1");
 
   return {
     root,
-    meta: join(root, "meta.json"),
+    meta: joinPath(root, "meta.json"),
     tools: (toolId: string) => {
-      const toolRoot = join(root, "tools", toolId);
+      const toolRoot = joinPath(root, "tools", toolId);
 
       return {
         root: toolRoot,
         executions: {
-          jsonl: join(toolRoot, "executions", "executions.jsonl"),
-          index: join(toolRoot, "executions", "executions.idx.json"),
-          pruning: join(toolRoot, "executions", "pruning.json"),
+          jsonl: joinPath(toolRoot, "executions", "executions.jsonl"),
+          index: joinPath(toolRoot, "executions", "executions.idx.json"),
+          pruning: joinPath(toolRoot, "executions", "pruning.json"),
         },
         artifacts: {
-          root: join(toolRoot, "artifacts"),
+          root: joinPath(toolRoot, "artifacts"),
           execution: (executionId: string) => {
-            const execRoot = join(toolRoot, "artifacts", executionId);
-            const filesRoot = join(execRoot, "files");
+            const execRoot = joinPath(toolRoot, "artifacts", executionId);
+            const filesRoot = joinPath(execRoot, "files");
 
             return {
               root: execRoot,
-              manifest: join(execRoot, "manifest.json"),
+              manifest: joinPath(execRoot, "manifest.json"),
               files: filesRoot,
-              file: (filename: string) => join(filesRoot, filename),
+              file: (filename: string) => joinPath(filesRoot, filename),
             };
           },
         },
         errors: {
-          jsonl: join(toolRoot, "errors", "errors.jsonl"),
+          jsonl: joinPath(toolRoot, "errors", "errors.jsonl"),
         },
       };
     },
@@ -85,11 +91,4 @@ export function dirname(path: string): string {
 export function basename(path: string): string {
   const parts = path.split("/");
   return parts[parts.length - 1] || "";
-}
-
-/**
- * Join path segments (cross-platform)
- */
-export function joinPath(...segments: string[]): string {
-  return segments.join("/").replace(/\/+/g, "/");
 }
