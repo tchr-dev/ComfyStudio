@@ -16,6 +16,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ComfyStudio is a ComfyUI-focused fork of StableStudio that provides a polished, DreamStudio-style UI for ComfyUI's powerful node-based backend. It's a monorepo built with TypeScript, React, and Vite, organized as Yarn workspaces with a plugin-based architecture for different inference backends.
 
+**Workspace Structure:**
+- `packages/comfystudio-ui/` - Main React application
+- `packages/comfystudio-plugin/` - Base plugin interfaces
+- `packages/comfystudio-plugin-comfyui/` - ComfyUI plugin (default)
+- `packages/comfystudio-plugin-*/` - Alternative backend plugins
+
 ## Prerequisites
 
 - Node.js 18+ (check: `node --version`)
@@ -596,6 +602,15 @@ Test files use Vitest and are colocated with source:
 ```bash
 # Run all tests
 yarn comfystudio-ui test
+
+# Run tests with coverage
+yarn comfystudio-ui test --coverage
+
+# Run tests in watch mode
+yarn comfystudio-ui test --watch
+
+# Run specific test file
+yarn comfystudio-ui test path/to/file.test.ts
 
 # Test files named: *.test.ts or *.test.tsx
 ```
