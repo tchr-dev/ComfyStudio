@@ -91,38 +91,42 @@ describe("ToolsPanel", () => {
   it("renders all 5 tools with names", async () => {
     vi.mocked(ToolRegistry.list).mockResolvedValue(mockTools);
 
-    render(<ToolsPanel />);
+    const { container } = render(<ToolsPanel />);
 
     await waitFor(() => {
-      expect(screen.getByText("Select")).toBeInTheDocument();
-      expect(screen.getByText("Eraser")).toBeInTheDocument();
-      expect(screen.getByText("Generate")).toBeInTheDocument();
-      expect(screen.getByText("Remove Background")).toBeInTheDocument();
-      expect(screen.getByText("Replace Background")).toBeInTheDocument();
+      // Tool names are now in title attributes (tooltips)
+      expect(container.querySelector('[title*="Select"]')).toBeInTheDocument();
+      expect(container.querySelector('[title*="Eraser"]')).toBeInTheDocument();
+      expect(container.querySelector('[title*="Generate"]')).toBeInTheDocument();
+      expect(container.querySelector('[title*="Remove Background"]')).toBeInTheDocument();
+      expect(container.querySelector('[title*="Replace Background"]')).toBeInTheDocument();
     });
   });
 
-  it("renders tool descriptions", async () => {
+  it("includes tool names in tooltips", async () => {
     vi.mocked(ToolRegistry.list).mockResolvedValue(mockTools);
 
-    render(<ToolsPanel />);
+    const { container } = render(<ToolsPanel />);
 
     await waitFor(() => {
-      expect(
-        screen.getByText("Select and manipulate canvas entities")
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText("Remove pixels from images by painting over them")
-      ).toBeInTheDocument();
+      // Tool names and shortcuts are in title attributes (tooltips)
+      const selectTool = container.querySelector('[title*="Select"]');
+      const brushTool = container.querySelector('[title*="Eraser"]');
+
+      expect(selectTool).toBeInTheDocument();
+      expect(brushTool).toBeInTheDocument();
+      expect(selectTool?.getAttribute("title")).toContain("v");
+      expect(brushTool?.getAttribute("title")).toContain("e");
     });
   });
 
   it("displays shortcuts when present", async () => {
     vi.mocked(ToolRegistry.list).mockResolvedValue(mockTools);
 
-    render(<ToolsPanel />);
+    const { container } = render(<ToolsPanel />);
 
     await waitFor(() => {
+      // Shortcuts are displayed as tiny overlays and in title attributes
       expect(screen.getByText("v")).toBeInTheDocument(); // Select shortcut
       expect(screen.getByText("e")).toBeInTheDocument(); // Brush shortcut
       expect(screen.getByText("g")).toBeInTheDocument(); // Generate shortcut
@@ -133,13 +137,13 @@ describe("ToolsPanel", () => {
   it("activates tool when clicked", async () => {
     vi.mocked(ToolRegistry.list).mockResolvedValue(mockTools);
 
-    render(<ToolsPanel />);
+    const { container } = render(<ToolsPanel />);
 
     await waitFor(() => {
-      expect(screen.getByText("Generate")).toBeInTheDocument();
+      expect(container.querySelector('[title*="Generate"]')).toBeInTheDocument();
     });
 
-    const generateTool = screen.getByText("Generate").closest("div");
+    const generateTool = container.querySelector('[title*="Generate"]');
     expect(generateTool).toBeTruthy();
 
     if (generateTool) {
@@ -154,12 +158,12 @@ describe("ToolsPanel", () => {
     const { container } = render(<ToolsPanel />);
 
     await waitFor(() => {
-      expect(screen.getByText("Select")).toBeInTheDocument();
+      expect(container.querySelector('[title*="Select"]')).toBeInTheDocument();
     });
 
-    // Find the clickable container div with cursor-pointer
+    // Find the Select tool container
     const selectToolContainer = container.querySelector(
-      ".cursor-pointer"
+      '[title*="Select"]'
     ) as HTMLElement;
     expect(selectToolContainer).toBeTruthy();
 
@@ -171,18 +175,19 @@ describe("ToolsPanel", () => {
   it("shows different styling for inactive tools", async () => {
     vi.mocked(ToolRegistry.list).mockResolvedValue(mockTools);
 
-    render(<ToolsPanel />);
+    const { container } = render(<ToolsPanel />);
 
     await waitFor(() => {
-      expect(screen.getByText("Generate")).toBeInTheDocument();
+      expect(container.querySelector('[title*="Generate"]')).toBeInTheDocument();
     });
 
-    const generateTool = screen.getByText("Generate").closest("div");
+    const generateTool = container.querySelector('[title*="Generate"]') as HTMLElement;
     expect(generateTool).toBeTruthy();
 
     if (generateTool) {
-      // Inactive tool should have different styling
+      // Inactive tool should have different styling (transparent border, not brand)
       expect(generateTool.className).not.toMatch(/border-brand-500/);
+      expect(generateTool.className).toMatch(/border-transparent/);
     }
   });
 
@@ -192,12 +197,12 @@ describe("ToolsPanel", () => {
     const { container } = render(<ToolsPanel />);
 
     await waitFor(() => {
-      expect(screen.getByText("Select")).toBeInTheDocument();
+      expect(container.querySelector('[title*="Select"]')).toBeInTheDocument();
     });
 
     // Find all clickable tool items
     const toolItems = container.querySelectorAll(".cursor-pointer");
-    expect(toolItems.length).toBeGreaterThan(0);
+    expect(toolItems.length).toBe(mockTools.length);
 
     // Each should have cursor-pointer class
     toolItems.forEach((item) => {
@@ -211,12 +216,12 @@ describe("ToolsPanel", () => {
     const { container } = render(<ToolsPanel />);
 
     await waitFor(() => {
-      expect(screen.getByText("Select")).toBeInTheDocument();
+      expect(container.querySelector('[title*="Select"]')).toBeInTheDocument();
     });
 
     // Check that SVG icons are rendered (lucide icons render as SVGs)
     const svgs = container.querySelectorAll("svg");
-    expect(svgs.length).toBeGreaterThan(0);
+    expect(svgs.length).toBe(mockTools.length);
   });
 
   it("handles tools without shortcuts gracefully", async () => {
@@ -233,13 +238,17 @@ describe("ToolsPanel", () => {
 
     vi.mocked(ToolRegistry.list).mockResolvedValue(toolsWithoutShortcuts);
 
-    render(<ToolsPanel />);
+    const { container } = render(<ToolsPanel />);
 
     await waitFor(() => {
-      expect(screen.getByText("No Shortcut Tool")).toBeInTheDocument();
+      expect(container.querySelector('[title*="No Shortcut Tool"]')).toBeInTheDocument();
     });
 
     // Tool should render without error even without shortcut
-    expect(screen.getByText("A tool without a shortcut")).toBeInTheDocument();
+    const toolElement = container.querySelector('[title*="No Shortcut Tool"]');
+    expect(toolElement).toBeInTheDocument();
+
+    // Title should only have the tool name, no shortcut in parentheses
+    expect(toolElement?.getAttribute("title")).toBe("No Shortcut Tool ");
   });
 });
