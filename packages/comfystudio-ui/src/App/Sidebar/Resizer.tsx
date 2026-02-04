@@ -18,9 +18,15 @@ export function Resizer({ position }: App.Sidebar.Props) {
     if (isMobileDevice) {
       return setSidebar(({ visible }) => ({ visible: !visible }));
     } else {
-      setSidebar(({ width }) => ({
-        width: width === 0 ? App.Sidebar.presetWidth() : 0,
-      }));
+      setSidebar((state) => {
+        if (state.widthMode === "auto") {
+          return { visible: !state.visible };
+        }
+        return {
+          width: state.width === 0 ? App.Sidebar.presetWidth() : 0,
+          visible: state.width === 0 ? true : false,
+        };
+      });
     }
   }, [isMobileDevice, setSidebar]);
 
@@ -32,6 +38,7 @@ export function Resizer({ position }: App.Sidebar.Props) {
       event.preventDefault();
       event.stopPropagation();
       setSidebar({
+        widthMode: "fixed",
         width: clamp(
           0,
           position === "left"
@@ -39,6 +46,7 @@ export function Resizer({ position }: App.Sidebar.Props) {
             : window.innerWidth - event.clientX,
           600
         ),
+        visible: true,
       });
       resize();
     };

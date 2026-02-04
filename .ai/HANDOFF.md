@@ -10,6 +10,7 @@
 ## Addendum (2026-02-04)
 
 - Added consolidated UI/UX reference doc: `docs/plans/2026-02-04-ui-ux-design-reference.md`
+- Updated Tools panel to auto-size to one column and expand on wrap; adjusted ToolsPanel test to remove act warning.
 
 ## Session Context
 
