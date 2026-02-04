@@ -1,3 +1,4 @@
+import { useMemo, useCallback } from "react";
 import { Generation } from "~/Generation";
 import { Theme } from "~/Theme";
 import { Editor } from "~/Editor";
@@ -63,7 +64,6 @@ function Thumbnail({ image }: { image: Generation.Image }) {
             <Generation.Image
                 image={image}
                 className="h-full w-full object-cover"
-                disableIntersectionObserver // Force load in strip
             />
         </div>
     );

@@ -145,8 +145,6 @@ export declare namespace Icon {
     Instagram,
     Twitter,
     Discord,
-    Twitter,
-    Discord,
     CGSociety,
     Sparkles,
     MousePointer,
