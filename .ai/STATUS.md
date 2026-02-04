@@ -34,6 +34,7 @@ The implementation of the declarative tool system is complete. The focus is now 
 5. ✅ **UI/UX Reference Doc** - Added `docs/plans/2026-02-04-ui-ux-design-reference.md` as a consolidated design reference.
 6. ✅ **Tool-Specific Panels** - Prompt/input/settings copy now varies for Select and Replace Background; replace background settings hide orientation and rename count.
 7. ✅ **Tool Panel Visibility** - Dock panels now render per active tool; Eraser hides generation panels; Remove Background shows input-only with tips.
+8. ✅ **Tools Panel Auto Width** - Left tools sidebar now auto-sizes to one column and expands with wrap; updated tests to avoid act warnings.
 
 **Commits:**
 - (Previous session) Implemented T1-T18

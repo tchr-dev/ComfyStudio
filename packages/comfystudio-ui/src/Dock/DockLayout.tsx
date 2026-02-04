@@ -35,7 +35,7 @@ export function DockLayout({
   }, [layout]);
 
   const leftColumn = (
-    <Column position="left" className="w-auto flex-none">
+    <Column position="left" className="w-auto flex-none items-start">
       <Panel
         title="Tools"
         open={DockState.isPanelVisible("tools", { activeTool })}
