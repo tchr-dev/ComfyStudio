@@ -13,3 +13,7 @@ node_modules
 !.yarn/versions
 
 .worktrees
+
+# Claude Code local configuration
+.claude.local.md
+.env

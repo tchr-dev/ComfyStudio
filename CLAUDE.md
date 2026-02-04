@@ -86,6 +86,35 @@ yarn comfystudio-plugin-webui <command>
 yarn comfystudio-plugin-webgpu <command>
 ```
 
+### Monorepo Workflow Tips
+
+**Two ways to run package commands:**
+
+```bash
+# Option 1: From repo root (recommended)
+yarn comfystudio-ui test
+yarn comfystudio-ui lint:fix
+
+# Option 2: cd into package first
+cd packages/comfystudio-ui
+yarn test
+yarn lint:fix
+```
+
+**Workspace dependency resolution:**
+- Changes to `@comfystudio/plugin` automatically picked up by `@comfystudio/ui` (via workspace protocol)
+- No need to rebuild dependencies unless changing exports
+- Run `yarn build` from root to rebuild all packages in dependency order
+
+**Adding dependencies:**
+```bash
+# Add to specific workspace
+yarn workspace @comfystudio/ui add react-query
+
+# Add to all workspaces (rare)
+yarn add -W eslint
+```
+
 ## Architecture
 
 ### Domain-Driven Design (DDD)
@@ -304,74 +333,16 @@ export default selectTool;
 
 Tools can have five types of settings, all of which auto-render in the UI:
 
-##### Slider
+| Type | Key Props | Example |
+|------|-----------|---------|
+| **slider** | `min`, `max`, `step`, `default` | `{ type: "slider", min: 1, max: 100, default: 20 }` |
+| **text** | `placeholder`, `maxLength`, `default` | `{ type: "text", placeholder: "Enter value", default: "" }` |
+| **textarea** | `placeholder`, `maxLength`, `default` | `{ type: "textarea", placeholder: "Enter prompt", default: "" }` |
+| **dropdown** | `options`, `default` | `{ type: "dropdown", options: [{value: "a", label: "A"}], default: "a" }` |
+| **checkbox** | `default` | `{ type: "checkbox", default: false }` |
+| **custom** | `component`, `props` | `{ type: "custom", component: "MyComponent", props: {...} }` |
 
-```tsx
-{
-  id: "size",
-  type: "slider",
-  label: "Size",
-  description: "Optional helpful description",
-  min: 1,
-  max: 100,
-  step: 1,      // Optional: defaults to 1
-  default: 20,
-}
-```
-
-##### Text and Textarea
-
-```tsx
-{
-  id: "prompt",
-  type: "textarea",  // or "text" for single-line
-  label: "Prompt",
-  placeholder: "Optional placeholder text",
-  maxLength: 500,    // Optional
-  default: "",
-}
-```
-
-##### Dropdown
-
-```tsx
-{
-  id: "sampler",
-  type: "dropdown",
-  label: "Sampler",
-  options: [
-    { value: "euler", label: "Euler" },
-    { value: "dpmpp_2m", label: "DPM++ 2M" },
-  ],
-  default: "euler",
-}
-```
-
-##### Checkbox
-
-```tsx
-{
-  id: "enabled",
-  type: "checkbox",
-  label: "Enable Feature",
-  description: "Toggle this feature on/off",
-  default: false,
-}
-```
-
-##### Custom
-
-```tsx
-{
-  id: "advanced",
-  type: "custom",
-  label: "Advanced Options",
-  component: "AdvancedSettings",  // Component name to render
-  props: {                        // Optional props for component
-    mode: "expert",
-  },
-}
-```
+All settings share: `id` (required), `label` (required), `description` (optional).
 
 #### Tool Implementation
 
@@ -579,6 +550,77 @@ Use `GlobalState.shallow` to limit rerenders when selecting multiple state slice
 - **CORS required**: ComfyUI must run with `--enable-cors-header` flag
 - **Port conflicts**: Frontend uses 3000, ComfyUI uses 8188 - ensure ports are free
 
+## Debugging & Troubleshooting
+
+### ComfyUI Connection Issues
+
+```bash
+# Check if ComfyUI is running with CORS
+curl -I http://127.0.0.1:8188
+# Should see: Access-Control-Allow-Origin: *
+
+# Restart ComfyUI with correct flags
+comfy launch -- --enable-cors-header
+
+# Check COMFYUI_PATH is set
+echo $COMFYUI_PATH
+```
+
+### Port Conflicts
+
+```bash
+# Check what's using port 3000 (frontend)
+lsof -i :3000
+kill -9 <PID>
+
+# Check what's using port 8188 (ComfyUI)
+lsof -i :8188
+kill -9 <PID>
+```
+
+### Build Failures
+
+```bash
+# Nuclear option: clean and reinstall
+yarn clean
+rm -rf node_modules
+yarn install
+yarn build
+
+# Check Node/Yarn versions
+node --version  # Should be 18+
+yarn --version  # Should be 3.3.0+
+```
+
+### Test Failures in Monorepo Context
+
+```bash
+# Wrong: Tests fail with "cannot find module"
+yarn test src/execution
+
+# Right: Use workspace-prefixed command
+yarn comfystudio-ui test src/execution
+
+# Or: cd into package first
+cd packages/comfystudio-ui
+yarn test src/execution
+```
+
+### Plugin Loading Failures
+
+Check browser console for errors. Common issues:
+- Plugin file doesn't exist at expected path
+- Plugin export signature mismatch
+- Missing plugin dependencies
+
+```bash
+# Verify plugin builds successfully
+yarn comfystudio-plugin-comfyui build
+
+# Check plugin is being loaded
+# Look for VITE_USE_*_PLUGIN in browser console
+```
+
 ## ComfyUI Integration
 
 ### Requirements
@@ -617,11 +659,27 @@ yarn comfystudio-ui test path/to/file.test.ts
 
 ## Environment Variables
 
-Set via Vite environment variables (prefix with `VITE_`):
-- `VITE_USE_EXAMPLE_PLUGIN` - Load example plugin
-- `VITE_USE_WEBUI_PLUGIN` - Load webui plugin
-- `VITE_USE_STABILITY_PLUGIN` - Load Stability plugin
-- `VITE_GIT_HASH` - Auto-injected git commit hash
+Set via Vite environment variables (prefix with `VITE_`) or shell exports:
+
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `COMFYUI_PATH` | Path to ComfyUI installation | `~/srv/ComfyUI` |
+| `VITE_USE_EXAMPLE_PLUGIN` | Load example plugin | - |
+| `VITE_USE_WEBUI_PLUGIN` | Load webui plugin | - |
+| `VITE_USE_STABILITY_PLUGIN` | Load Stability plugin | - |
+| `VITE_GIT_HASH` | Auto-injected git commit hash | - |
+
+**Setup methods:**
+```bash
+# Shell export (temporary, current session only)
+export COMFYUI_PATH="/path/to/ComfyUI"
+
+# .env file (persistent, add to .gitignore)
+echo 'VITE_USE_EXAMPLE_PLUGIN=true' > .env
+
+# Inline (one-time commands)
+VITE_USE_EXAMPLE_PLUGIN=true yarn dev
+```
 
 ## Workflow Execution System
 
@@ -723,14 +781,14 @@ if (result.ok) {
 
 ```bash
 # Run all execution tests (306 tests)
-yarn test src/execution --run
+yarn comfystudio-ui test src/execution
 
 # Specific test suites
-yarn test src/execution/state       # FSM, policies, revisions (67 tests)
-yarn test src/execution/history     # JSONL, replay, prune (65 tests)
-yarn test src/execution/runner      # Lifecycle, cancel, recovery (61 tests)
-yarn test src/execution/spatial     # Coordinate capture (35 tests)
-yarn test src/execution/ui          # Hooks, visualization, progress (70 tests)
+yarn comfystudio-ui test src/execution/state       # FSM, policies, revisions (67 tests)
+yarn comfystudio-ui test src/execution/history     # JSONL, replay, prune (65 tests)
+yarn comfystudio-ui test src/execution/runner      # Lifecycle, cancel, recovery (61 tests)
+yarn comfystudio-ui test src/execution/spatial     # Coordinate capture (35 tests)
+yarn comfystudio-ui test src/execution/ui          # Hooks, visualization, progress (70 tests)
 ```
 
 ### Integration Notes
@@ -753,3 +811,33 @@ See `src/execution/README.md` for comprehensive documentation.
 - Plugin system created to support multiple inference backends
 - Recent work focuses on dock-based UI architecture (see `docs/plans/`)
 - **2026-01**: Production-grade workflow execution system (M0-M4, 306 tests)
+
+## Personal Configuration
+
+**Using `.claude.local.md` for personal preferences:**
+
+Create a `.claude.local.md` file in the project root for personal settings that shouldn't be shared with the team:
+
+```bash
+# Create personal config file
+touch .claude.local.md
+
+# Add to .gitignore (if not already there)
+echo '.claude.local.md' >> .gitignore
+```
+
+Example `.claude.local.md` contents:
+```markdown
+# My Personal ComfyStudio Preferences
+
+## Local Environment
+- ComfyUI path: /Users/myname/projects/ComfyUI
+- Preferred test runner: watch mode with coverage
+
+## My Workflow
+- Always run `yarn lint:fix` before committing
+- Use example plugin for development
+- Prefer verbose logging in development
+```
+
+Claude Code auto-discovers and loads `.claude.local.md` alongside `CLAUDE.md`, with local settings taking precedence.
