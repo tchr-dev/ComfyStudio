@@ -7,6 +7,10 @@
 
 ---
 
+## Addendum (2026-02-04)
+
+- Added consolidated UI/UX reference doc: `docs/plans/2026-02-04-ui-ux-design-reference.md`
+
 ## Session Context
 
 ### What We're Building

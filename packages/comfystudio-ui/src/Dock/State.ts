@@ -10,7 +10,7 @@ export type DockLayoutState = {
 };
 
 export namespace DockState {
-  const STORAGE_KEY = "dock-layout.v1";
+  const STORAGE_KEY = "dock-layout.v3";
 
   export const createDefault = (): DockLayoutState => ({
     panels: [

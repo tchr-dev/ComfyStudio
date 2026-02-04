@@ -29,7 +29,19 @@ export function DockLayout({
   }, [layout]);
 
   const leftColumn = (
-    <Column position="left">
+    <Column position="left" className="w-auto flex-none">
+      <Panel
+        title="Tools"
+        open={DockState.isPanelVisible("tools", { activeTool })}
+        className="flex-1"
+      >
+        <ToolsPanel />
+      </Panel>
+    </Column>
+  );
+
+  const rightColumn = (
+    <Column position="right" className="flex-1 min-w-0">
       <Panel
         title="Editor"
         open={DockState.isPanelVisible("editor-tool", { activeTool })}
@@ -55,11 +67,6 @@ export function DockLayout({
           </Panel>
         </>
       )}
-    </Column>
-  );
-
-  const rightColumn = (
-    <Column position="right">
       <Panel title="Layers">
         <LayersPanel />
       </Panel>

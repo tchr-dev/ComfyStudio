@@ -91,10 +91,10 @@ export namespace Sidebar {
 
   namespace State {
     export const use = GlobalState.create<State>((set) => {
-      const sidebar = { visible: true, width: presetWidth() };
+      // const sidebar = { visible: true, width: presetWidth() };
       return {
-        left: sidebar,
-        right: sidebar,
+        left: { visible: true, width: presetWidth() },
+        right: { visible: true, width: presetWidth() },
 
         setSidebar: (position, setSidebar) =>
           set((state) => ({

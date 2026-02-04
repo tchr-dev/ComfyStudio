@@ -1,6 +1,6 @@
 # Task Board
 
-**Last Updated:** 2026-01-28
+**Last Updated:** 2026-02-04
 **Source:** `.ai/plans/2026-01-28-declarative-tool-system-implementation.md`
 
 ---
@@ -68,6 +68,9 @@ _No tasks currently in progress_
   - Files: `docs/adr/README.md`, `ADR-0001` through `ADR-0004`
   - Locked decisions: Tool registry, definitions structure, discriminated unions, dock persistence
   - Status: Created, pending commit
+
+- **[P6]** UI/UX Design Reference (Codex) ✅
+  - File: `docs/plans/2026-02-04-ui-ux-design-reference.md`
 
 ---
 

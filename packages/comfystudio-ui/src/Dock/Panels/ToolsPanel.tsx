@@ -21,7 +21,7 @@ export function ToolsPanel() {
   }, []);
 
   return (
-    <div className="flex flex-wrap gap-1 p-2">
+    <div className="flex flex-col flex-wrap gap-1 p-2 h-full content-start items-start">
       {tools.length === 0 ? (
         <div className="text-sm text-muted-white">
           No tools available yet.
@@ -37,7 +37,7 @@ export function ToolsPanel() {
               onClick={() => setActiveTool(tool.id as Editor.Tool.Active)}
               title={`${tool.name} ${tool.shortcut ? `(${tool.shortcut})` : ""}`}
               className={classes(
-                "flex h-11 w-11 cursor-pointer items-center justify-center rounded-md border transition-all duration-150",
+                "flex h-11 w-11 cursor-pointer items-center justify-center rounded-md border transition-all duration-150 relative group",
                 isActive
                   ? "border-brand-500 bg-brand-500/10 text-brand-500"
                   : "border-transparent text-zinc-400 hover:bg-white/5 hover:text-white"

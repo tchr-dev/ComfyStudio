@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated:** 2026-01-28 18:30 UTC
+**Last Updated:** 2026-02-04
 **Active Branch:** `main`
 **Active Agent:** Claude Sonnet 4.5
 
@@ -31,6 +31,7 @@ The implementation of the declarative tool system is complete. The focus is now 
 2. ✅ **Verification** - Confirmed presence of Types, Registry, State, definitions, and implementations.
 3. ✅ **Testing** - Passed `yarn comfystudio-ui test` with 30 test files and 422 tests passing.
 4. ✅ **Documentation Update** - Updating STATUS and TASKBOARD to reflect completion.
+5. ✅ **UI/UX Reference Doc** - Added `docs/plans/2026-02-04-ui-ux-design-reference.md` as a consolidated design reference.
 
 **Commits:**
 - (Previous session) Implemented T1-T18

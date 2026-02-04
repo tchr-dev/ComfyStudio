@@ -19,7 +19,7 @@ import { Sidebar } from "./Sidebar";
 import { Tool, Tools } from "./Tool";
 import { TopBar } from "./TopBar";
 import { ThumbnailStrip } from "~/Dock/Panels/ThumbnailStrip";
-import { FloatingToolsPanel } from "~/Dock/FloatingToolsPanel";
+
 
 export function Editor() {
   Shortcuts.use();
@@ -46,7 +46,6 @@ export function Editor() {
             <Entities />
           </Canvas>
           <ThumbnailStrip />
-          <FloatingToolsPanel />
           <Floating />
         </div>
       </>
