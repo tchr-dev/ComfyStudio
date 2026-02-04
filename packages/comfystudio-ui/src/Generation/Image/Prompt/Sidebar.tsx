@@ -1,7 +1,16 @@
 import { App } from "~/App";
 import { Generation } from "~/Generation";
 export namespace Sidebar {
-  export function Section({ id }: { id: ID }) {
+  export function Section({
+    id,
+    placeholders,
+  }: {
+    id: ID;
+    placeholders?: {
+      positive?: string;
+      negative?: string;
+    };
+  }) {
     const { input } = Generation.Image.Input.use(id);
     if (!input) return null;
     return (
@@ -22,7 +31,7 @@ export namespace Sidebar {
         //   </Theme.Button>
         // )}
       >
-        <Generation.Image.Prompts id={id} />
+        <Generation.Image.Prompts id={id} placeholders={placeholders} />
       </App.Sidebar.Section>
     );
   }

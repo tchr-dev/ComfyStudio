@@ -10,6 +10,8 @@
 ## Addendum (2026-02-04)
 
 - Added consolidated UI/UX reference doc: `docs/plans/2026-02-04-ui-ux-design-reference.md`
+- Updated Dock sidebars to show tool-specific prompt/input/settings copy for Select and Replace Background; replace background settings hide orientation and rename count
+- Implemented tool-based panel visibility and remove-background tips helper in Input panel
 
 ## Session Context
 

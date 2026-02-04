@@ -40,6 +40,9 @@ vi.mock("./Panels/PromptPanel", () => ({
 vi.mock("./Panels/AdvancedPanel", () => ({
   AdvancedPanel: () => null,
 }));
+vi.mock("./Panels/SettingsPanel", () => ({
+  SettingsPanel: () => null,
+}));
 vi.mock("./Panels/LayersPanel", () => ({
   LayersPanel: () => null,
 }));

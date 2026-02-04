@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-02-04
 **Active Branch:** `main`
-**Active Agent:** Claude Sonnet 4.5
+**Active Agent:** Codex
 
 ---
 
@@ -32,6 +32,8 @@ The implementation of the declarative tool system is complete. The focus is now 
 3. ✅ **Testing** - Passed `yarn comfystudio-ui test` with 30 test files and 422 tests passing.
 4. ✅ **Documentation Update** - Updating STATUS and TASKBOARD to reflect completion.
 5. ✅ **UI/UX Reference Doc** - Added `docs/plans/2026-02-04-ui-ux-design-reference.md` as a consolidated design reference.
+6. ✅ **Tool-Specific Panels** - Prompt/input/settings copy now varies for Select and Replace Background; replace background settings hide orientation and rename count.
+7. ✅ **Tool Panel Visibility** - Dock panels now render per active tool; Eraser hides generation panels; Remove Background shows input-only with tips.
 
 **Commits:**
 - (Previous session) Implemented T1-T18

@@ -1,7 +1,16 @@
 import { Generation } from "~/Generation";
 
 export type Prompts = Generation.Image.Prompt[];
-export function Prompts({ id }: { id: ID }) {
+export function Prompts({
+  id,
+  placeholders,
+}: {
+  id: ID;
+  placeholders?: {
+    positive?: string;
+    negative?: string;
+  };
+}) {
   const { input } = Generation.Image.Input.use(id);
   if (!input) return null;
   return (
@@ -12,6 +21,7 @@ export function Prompts({ id }: { id: ID }) {
           index={index}
           key={keys(index, input.prompts.length)}
           variant="advanced"
+          placeholders={placeholders}
         />
       ))}
     </div>

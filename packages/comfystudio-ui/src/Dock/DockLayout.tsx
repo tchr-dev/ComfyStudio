@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { Editor } from "~/Editor";
 import { Generation } from "~/Generation";
@@ -9,9 +9,11 @@ import { EditorToolPanel } from "./Panels/EditorToolPanel";
 import { InputPanel } from "./Panels/InputPanel";
 import { LayersPanel } from "./Panels/LayersPanel";
 import { PromptPanel } from "./Panels/PromptPanel";
+import { SettingsPanel } from "./Panels/SettingsPanel";
 import { Column } from "./Column";
 import { Panel } from "./Panel";
 import { DockLayoutState, DockState } from "./State";
+import { getToolPanelVisibility } from "./panelVisibility";
 
 export function DockLayout({
   side = "both",
@@ -23,6 +25,10 @@ export function DockLayout({
   );
   const { input } = Generation.Image.Session.useCurrentInput();
   const [activeTool] = Editor.Tool.Active.use();
+  const panelVisibility = useMemo(
+    () => getToolPanelVisibility(activeTool),
+    [activeTool]
+  );
 
   useEffect(() => {
     DockState.save(layout);
@@ -50,21 +56,26 @@ export function DockLayout({
       </Panel>
       {input?.id && (
         <>
-          <Panel title="Prompt">
-            <PromptPanel inputId={input.id} />
-          </Panel>
-          <Panel title="Input">
-            <InputPanel inputId={input.id} />
-          </Panel>
-          <Panel title="Settings">
-            <div className="flex flex-col gap-4">
-              <Generation.Image.Size id={input.id} />
-              <Generation.Image.Count.Slider />
-            </div>
-          </Panel>
-          <Panel title="Advanced">
-            <AdvancedPanel inputId={input.id} />
-          </Panel>
+          {panelVisibility.prompt && (
+            <Panel title="Prompt">
+              <PromptPanel inputId={input.id} />
+            </Panel>
+          )}
+          {panelVisibility.input && (
+            <Panel title="Input">
+              <InputPanel inputId={input.id} />
+            </Panel>
+          )}
+          {panelVisibility.settings && (
+            <Panel title="Settings">
+              <SettingsPanel inputId={input.id} />
+            </Panel>
+          )}
+          {panelVisibility.advanced && (
+            <Panel title="Advanced">
+              <AdvancedPanel inputId={input.id} />
+            </Panel>
+          )}
         </>
       )}
       <Panel title="Layers">

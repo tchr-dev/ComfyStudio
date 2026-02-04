@@ -5,7 +5,22 @@ import { Generation } from "~/Generation";
 import { Theme } from "~/Theme";
 
 export namespace Sidebar {
-  export function Section({ id }: { id: ID }) {
+  export function Section({
+    id,
+    copy,
+    showStrength = true,
+    helper,
+  }: {
+    id: ID;
+    copy?: {
+      title?: string;
+      titleWithImage?: string;
+      emptyIdle?: string;
+      emptyHover?: string;
+    };
+    showStrength?: boolean;
+    helper?: React.ReactNode;
+  }) {
     const { setInput, importInit, input } = Generation.Image.Input.use(id);
     const [imageHovering, setImageHovering] = useState(false);
     const draggingImage = Generation.Image.HTMLElement.Dragging.useImage();
@@ -49,12 +64,20 @@ export namespace Sidebar {
     );
 
     if (!input) return null;
+    const panelTitle = input.init
+      ? copy?.titleWithImage ?? "Image"
+      : copy?.title ?? "Upload image";
+    const emptyHoverCopy =
+      copy?.emptyHover ?? "Drop image here to create variations";
+    const emptyIdleCopy =
+      copy?.emptyIdle ?? "Upload an image to create variations";
+
     return (
       <App.Sidebar.Section
         divider
         collapsable
         padding="sm"
-        title={input.init ? "Image" : "Upload image"}
+        title={panelTitle}
         defaultExpanded={defaultExpanded}
         button={(props) =>
           input.init ? (
@@ -125,24 +148,26 @@ export namespace Sidebar {
                     size={24}
                   />
                 </div>
-                <div className="mt-2">
-                  <Theme.Slider
-                    value={input.strength * 100}
-                    min={0}
-                    max={100}
-                    step={1}
-                    percentage
-                    title="Image strength"
-                    onChange={(weight) => {
-                      const strength = weight / 100;
+                {showStrength && (
+                  <div className="mt-2">
+                    <Theme.Slider
+                      value={input.strength * 100}
+                      min={0}
+                      max={100}
+                      step={1}
+                      percentage
+                      title="Image strength"
+                      onChange={(weight) => {
+                        const strength = weight / 100;
 
-                      setLastStrength(strength);
-                      setInput((input) => {
-                        input.strength = weight / 100;
-                      });
-                    }}
-                  />
-                </div>
+                        setLastStrength(strength);
+                        setInput((input) => {
+                          input.strength = weight / 100;
+                        });
+                      }}
+                    />
+                  </div>
+                )}
               </>
             ) : (
               <div
@@ -159,7 +184,7 @@ export namespace Sidebar {
                       className="pointer-events-none"
                     />
                     <h3 className="pointer-events-none">
-                      Drop image here to create variations
+                      {emptyHoverCopy}
                     </h3>
                   </>
                 ) : (
@@ -169,13 +194,14 @@ export namespace Sidebar {
                       className="opacity-75 duration-100 group-hover:opacity-100"
                     />
                     <h3 className="opacity-75 duration-100 group-hover:opacity-100">
-                      Upload an image to create variations
+                      {emptyIdleCopy}
                     </h3>
                   </>
                 )}
               </div>
             )}
           </div>
+          {helper && <div className="mt-3">{helper}</div>}
         </div>
       </App.Sidebar.Section>
     );

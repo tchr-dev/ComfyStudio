@@ -3,11 +3,11 @@ import { Theme } from "~/Theme";
 
 export type Count = number;
 export namespace Count {
-  export function Slider() {
+  export function Slider({ title }: { title?: string }) {
     const [count, setCount] = Count.use();
     return (
       <Theme.Slider
-        title="Image count"
+        title={title ?? "Image count"}
         min={1}
         max={10}
         value={count}

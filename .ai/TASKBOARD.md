@@ -18,7 +18,7 @@
 
 ## TODO
 
-_All tasks completed_
+_No tasks currently in progress_
 
 ---
 
@@ -31,6 +31,15 @@ _No tasks currently in progress_
 ## DONE
 
 ### Implementation Phase
+
+- **[T19]** Tool-Specific Panels (Codex) ✅
+  - Tool-specific prompt placeholders for Select and Replace Background
+  - Tool-specific input copy for Selection Mask and Replace Background
+  - Settings panel updated: Select dummy control, Replace Background hides orientation, count renamed to Background variants
+- **[T20]** Tool Panel Visibility + Remove BG Tips (Codex) ✅
+  - Prompt/Input/Settings/Advanced panels now conditionally render per active tool
+  - Eraser shows only Editor + Layers; Remove Background shows Input + Layers
+  - Remove Background Input includes collapsible tips helper and tailored upload copy
 
 - **[T1-T3]** Infrastructure ✅
   - Types, State, Registry implemented and tested
