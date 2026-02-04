@@ -72,6 +72,12 @@ _No tasks currently in progress_
 - **[P6]** UI/UX Design Reference (Codex) ✅
   - File: `docs/plans/2026-02-04-ui-ux-design-reference.md`
 
+### Maintenance
+
+- **[M1]** Tools Panel Auto Width (Codex) ✅
+  - Left tools sidebar auto-sizes to one column and expands on wrap
+  - Updated ToolsPanel test to eliminate act warning
+
 ---
 
 ## BLOCKED

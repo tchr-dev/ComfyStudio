@@ -21,7 +21,7 @@ export function ToolsPanel() {
   }, []);
 
   return (
-    <div className="flex flex-col flex-wrap gap-1 p-2 h-full content-start items-start">
+    <div className="inline-flex h-full max-h-full w-fit flex-col flex-wrap content-start items-start gap-1 p-2">
       {tools.length === 0 ? (
         <div className="text-sm text-muted-white">
           No tools available yet.

@@ -81,8 +81,10 @@ describe("ToolsPanel", () => {
     mockActiveTool.value = "select";
   });
 
-  it("displays loading state when no tools are loaded", () => {
-    vi.mocked(ToolRegistry.list).mockResolvedValue([]);
+  it("displays loading state when no tools are loaded", async () => {
+    vi.mocked(ToolRegistry.list).mockReturnValue(
+      new Promise<ToolDefinition[]>(() => {})
+    );
 
     render(<ToolsPanel />);
     expect(screen.getByText("No tools available yet.")).toBeInTheDocument();
