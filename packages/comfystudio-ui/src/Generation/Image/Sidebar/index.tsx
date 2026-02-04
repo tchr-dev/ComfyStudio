@@ -2,6 +2,9 @@ import { App } from "~/App";
 import { AdvancedPanel } from "~/Dock/Panels/AdvancedPanel";
 import { InputPanel } from "~/Dock/Panels/InputPanel";
 import { PromptPanel } from "~/Dock/Panels/PromptPanel";
+import { SettingsPanel } from "~/Dock/Panels/SettingsPanel";
+import { getToolPanelVisibility } from "~/Dock/panelVisibility";
+import { Editor } from "~/Editor";
 import { Generation } from "~/Generation";
 
 export function Sidebar() {
@@ -20,6 +23,11 @@ export namespace Sidebar {
   }) {
     const [settingsOpen, setSettingsOpen] = useState(true);
     const areStylesEnabled = Generation.Image.Styles.useAreEnabled();
+    const [activeTool] = Editor.Tool.Active.use();
+    const panelVisibility = useMemo(
+      () => getToolPanelVisibility(activeTool),
+      [activeTool]
+    );
     return (
       <>
         {areStylesEnabled && (
@@ -29,23 +37,24 @@ export namespace Sidebar {
             </div>
           </App.Sidebar.Section>
         )}
-        <PromptPanel inputId={id} />
-        {variant === "generate" && (
+        {panelVisibility.prompt && <PromptPanel inputId={id} />}
+        {variant === "generate" && panelVisibility.input && (
           <InputPanel inputId={id} />
         )}
-        <App.Sidebar.Section
-          divider={false}
-          collapsable
-          defaultExpanded
-          title="Settings"
-          onChange={setSettingsOpen}
-        >
-          <div className="flex flex-col gap-4">
-            {variant === "generate" && <Generation.Image.Size id={id} />}
-            <Generation.Image.Count.Slider />
-          </div>
-        </App.Sidebar.Section>
-        {settingsOpen && <AdvancedPanel inputId={id} />}
+        {panelVisibility.settings && (
+          <App.Sidebar.Section
+            divider={false}
+            collapsable
+            defaultExpanded
+            title="Settings"
+            onChange={setSettingsOpen}
+          >
+            <SettingsPanel inputId={id} showSize={variant === "generate"} />
+          </App.Sidebar.Section>
+        )}
+        {settingsOpen && panelVisibility.advanced && (
+          <AdvancedPanel inputId={id} />
+        )}
       </>
     );
   }

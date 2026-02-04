@@ -17,6 +17,11 @@ export type Prompt = {
   weight: number;
 };
 
+type PromptPlaceholders = {
+  positive?: string;
+  negative?: string;
+};
+
 type Props = StyleableWithChildren & {
   id: ID;
   index?: number;
@@ -24,6 +29,7 @@ type Props = StyleableWithChildren & {
   readOnly?: boolean;
   variant?: "simple" | "advanced" | "display";
   allowUseAgain?: boolean;
+  placeholders?: PromptPlaceholders;
 };
 
 export function Prompt({
@@ -31,6 +37,7 @@ export function Prompt({
   index = 0,
   variant = "simple",
   allowUseAgain,
+  placeholders,
   className,
 }: Props) {
   const { deletePrompt, shuffle, setInput, input } =
@@ -89,8 +96,8 @@ export function Prompt({
           className="w-full px-0 py-0"
           placeholder={
             promptWeight > 0
-              ? "What do you want to see?"
-              : "What do you want to avoid?"
+              ? placeholders?.positive ?? "What do you want to see?"
+              : placeholders?.negative ?? "What do you want to avoid?"
           }
           value={promptText}
           onChange={onChange}
