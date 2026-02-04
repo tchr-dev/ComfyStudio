@@ -82,12 +82,12 @@ describe("ToolsPanel", () => {
   });
 
   it("displays loading state when no tools are loaded", async () => {
-    vi.mocked(ToolRegistry.list).mockReturnValue(
-      new Promise<ToolDefinition[]>(() => {})
-    );
+    vi.mocked(ToolRegistry.list).mockResolvedValue([]);
 
     render(<ToolsPanel />);
-    expect(screen.getByText("No tools available yet.")).toBeInTheDocument();
+    expect(
+      await screen.findByText("No tools available yet.")
+    ).toBeInTheDocument();
   });
 
   it("renders all 5 tools with names", async () => {
