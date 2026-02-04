@@ -5,8 +5,17 @@
 # <a id="quick-start" href="#quick-start">🚀 Quick Start</a>
 
 You'll need to have [Node.js](https://nodejs.org/en/) and
-[Yarn](https://yarnpkg.com/) installed. Then run the following commands to
-install dependencies and launch ComfyStudio.
+[Yarn](https://yarnpkg.com/) installed.
+
+> [!IMPORTANT]
+> This app requires ComfyUI to be started with CORS headers enabled.
+
+Then run the following commands to install dependencies and launch ComfyStudio:
+
+```bash
+yarn install
+yarn dev
+```
 
 _**That's it! 🎉**_
 

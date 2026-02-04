@@ -1,12 +1,11 @@
 // packages/comfystudio-ui/src/Tools/State.ts
+// Test auto-format hook - this comment will test the formatting automation
 import { useCallback } from "react";
 
 import { GlobalState } from "~/GlobalState";
 
-type ToolStateStore = {
-  settings: Record<string, Record<string, any>>;
-  activeTool: string | null;
-};
+// Testing: This should get formatted
+type ToolStateStore={settings:Record<string,Record<string,any>>;activeTool:string|null;};
 
 const store = GlobalState.create<ToolStateStore>(() => ({
   settings: {},

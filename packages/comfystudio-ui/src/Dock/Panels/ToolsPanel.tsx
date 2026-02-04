@@ -21,7 +21,7 @@ export function ToolsPanel() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-wrap gap-1 p-2">
       {tools.length === 0 ? (
         <div className="text-sm text-muted-white">
           No tools available yet.
@@ -35,40 +35,25 @@ export function ToolsPanel() {
             <div
               key={tool.id}
               onClick={() => setActiveTool(tool.id as Editor.Tool.Active)}
+              title={`${tool.name} ${tool.shortcut ? `(${tool.shortcut})` : ""}`}
               className={classes(
-                "cursor-pointer rounded border p-3 transition-colors",
+                "flex h-11 w-11 cursor-pointer items-center justify-center rounded-md border transition-all duration-150",
                 isActive
-                  ? "border-brand-500 bg-brand-500/10"
-                  : "border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900/50"
+                  ? "border-brand-500 bg-brand-500/10 text-brand-500"
+                  : "border-transparent text-zinc-400 hover:bg-white/5 hover:text-white"
               )}
             >
-              <div className="flex items-start gap-3">
-                {IconComponent && (
-                  <div className="shrink-0 pt-0.5">
-                    <IconComponent
-                      size={18}
-                      className={isActive ? "text-brand-500" : "text-zinc-400"}
-                    />
-                  </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <div className="text-sm font-medium text-white">
-                      {tool.name}
-                    </div>
-                    {tool.shortcut && (
-                      <div className="shrink-0 rounded bg-zinc-800 px-1.5 py-0.5 text-xs text-zinc-400">
-                        {tool.shortcut}
-                      </div>
-                    )}
-                  </div>
-                  {tool.description && (
-                    <div className="mt-1 text-xs text-muted-white">
-                      {tool.description}
-                    </div>
-                  )}
+              {IconComponent && (
+                <IconComponent
+                  size={20}
+                  className="transition-transform duration-150 group-hover:scale-105"
+                />
+              )}
+              {tool.shortcut && (
+                <div className="absolute bottom-0.5 right-0.5 text-[10px] text-zinc-500 opacity-50">
+                  {tool.shortcut}
                 </div>
-              </div>
+              )}
             </div>
           );
         })

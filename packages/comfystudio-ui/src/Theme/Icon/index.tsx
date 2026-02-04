@@ -66,6 +66,10 @@ import {
   X,
   ZoomIn,
   ZoomOut,
+  Sparkles,
+  MousePointer,
+  Scissors,
+  Loader,
 } from "lucide-react";
 
 import {
@@ -141,7 +145,13 @@ export declare namespace Icon {
     Instagram,
     Twitter,
     Discord,
+    Twitter,
+    Discord,
     CGSociety,
+    Sparkles,
+    MousePointer,
+    Scissors,
+    Loader,
     InfoIcon,
     ShareIcon,
     AspectRatio,
@@ -259,7 +269,12 @@ export namespace Icon {
   Icon.ImagePlus = wrapLucideIcon(ImagePlus);
   Icon.Pencil = wrapLucideIcon(Pencil);
   Icon.Keyboard = wrapLucideIcon(Keyboard);
+  Icon.Keyboard = wrapLucideIcon(Keyboard);
   Icon.ChevronsLeftRight = wrapLucideIcon(ChevronsLeftRight);
+  Icon.Sparkles = wrapLucideIcon(Sparkles);
+  Icon.MousePointer = wrapLucideIcon(MousePointer);
+  Icon.Scissors = wrapLucideIcon(Scissors);
+  Icon.Loader = wrapLucideIcon(Loader);
 
   Icon.ArtStation = wrapCustomIcon(ArtStation);
   Icon.Instagram = wrapCustomIcon(Instagram);

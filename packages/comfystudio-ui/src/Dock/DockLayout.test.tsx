@@ -19,7 +19,7 @@ vi.mock("~/Editor", () => ({
   Editor: {
     Tool: {
       Active: {
-        use: () => ["select", () => {}],
+        use: () => ["select", () => { }],
       },
     },
   },
@@ -47,8 +47,8 @@ vi.mock("./Panels/LayersPanel", () => ({
 import { DockLayout } from "./DockLayout";
 
 describe("DockLayout", () => {
-  it("renders the tools panel", () => {
+  it("renders the layers panel", () => {
     const { getByText } = render(<DockLayout />);
-    expect(getByText("Tools")).toBeTruthy();
+    expect(getByText("Layers")).toBeTruthy();
   });
 });

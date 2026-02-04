@@ -30,9 +30,6 @@ export function DockLayout({
 
   const leftColumn = (
     <Column position="left">
-      <Panel title="Tools">
-        <ToolsPanel />
-      </Panel>
       <Panel
         title="Editor"
         open={DockState.isPanelVisible("editor-tool", { activeTool })}
