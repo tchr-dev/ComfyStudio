@@ -1,5 +1,4 @@
 import { App } from "~/App";
-import { EditorToolPanel } from "~/Dock/Panels/EditorToolPanel";
 import { Editor } from "~/Editor";
 import { Generation } from "~/Generation";
 import { Theme } from "~/Theme";
@@ -18,8 +17,9 @@ const tips = [
 export function Sidebar() {
   const selectedID = Editor.Selection.OnlyOne.use();
   const dreams = Editor.Entities.useType("dream") as Editor.Dream[];
+  const [activeEditTool] = Editor.Tool.Active.use();
+  const { input: sessionInput } = Generation.Image.Session.useCurrentInput();
   const [inputID, setInputID] = useState("");
-  const createDream = Editor.Dream.Render.use(inputID);
 
   useEffect(() => {
     selectedID && setInputID(selectedID);
@@ -35,28 +35,75 @@ export function Sidebar() {
     () => dreams.filter(({ id }) => id === selectedID).length > 0,
     [dreams, selectedID]
   );
+  const isRemoveBG = activeEditTool === "remove-background";
+  const isReplaceBG = activeEditTool === "replace-background";
+  const selectedInput = Generation.Image.Input.get(inputID);
+  const replaceInputID = selectedInput?.id ?? sessionInput?.id;
+  const effectiveInputID = isReplaceBG ? replaceInputID : inputID;
+  const createDream = Editor.Dream.Render.use(effectiveInputID ?? "");
+  const showGenerationTab =
+    (isDream && !isRemoveBG) ||
+    (isReplaceBG && !!selectedID && !!effectiveInputID);
+  const generationTabID = isReplaceBG ? effectiveInputID ?? "" : inputID;
+  const bottomInputID = isReplaceBG ? effectiveInputID : inputID;
+
+  const bottom = selectedID && bottomInputID && !isRemoveBG && (
+    <App.Sidebar.Tab.Bottom>
+      <Generation.Image.Create.Button
+        id={bottomInputID}
+        onIdleClick={() => createDream()}
+        fullWidth
+        disabled={
+          !bottomInputID ||
+          generating ||
+          (!isReplaceBG && !(dreams.filter((d) => d.id === selectedID).length > 0))
+        }
+        loading={generating}
+      />
+    </App.Sidebar.Tab.Bottom>
+  );
 
   return (
     <>
-      <EditorToolPanel />
-      {isDream && <Generation.Image.Sidebar.Tab variant="editor" id={inputID} />}
-      {!isDream && selectedID && <Editor.Image.Sidebar.Tab id={selectedID} />}
-      {!selectedID && <EmptySidebar />}
-      {selectedID && (
-        <div className="mt-4">
-          <Generation.Image.Create.Button
-            id={inputID}
-            onIdleClick={() => createDream()}
-            fullWidth
-            disabled={
-              !inputID ||
-              generating ||
-              !(dreams.filter((d) => d.id === selectedID).length > 0)
-            }
-            loading={generating}
-          />
-        </div>
-      )}
+      <App.Sidebar.Tab.Set
+        name="Edit"
+        position="left"
+        route="/edit"
+        icon={Theme.Icon.Edit}
+        bottom={bottom}
+        enabled={
+          location.pathname.startsWith("/generate") ||
+          location.pathname.startsWith("/edit")
+        }
+        button={(props) => (
+          <App.Sidebar.Tab.Button {...props} onClick={props.onClick}>
+            Edit
+          </App.Sidebar.Tab.Button>
+        )}
+      >
+        <Editor.EditTool.Rail />
+        <Editor.Tool.Sidebar.Section />
+        {showGenerationTab && (
+          <Generation.Image.Sidebar.Tab variant="editor" id={generationTabID} />
+        )}
+        {isRemoveBG && <RemoveBgAction />}
+        {isReplaceBG && <ReplaceBgAction />}
+        {!isDream && !isRemoveBG && !isReplaceBG && selectedID && (
+          <Editor.Image.Sidebar.Tab id={selectedID} />
+        )}
+        {!selectedID && <EmptySidebar />}
+      </App.Sidebar.Tab.Set>
+      <App.Sidebar.Tab.Set
+        button={false}
+        route="/edit"
+        enabled={location.pathname.startsWith("/edit")}
+        defaultActive
+        name="Layers"
+        position="right"
+        icon={Theme.Icon.Layers}
+      >
+        <Editor.Entities.Sidebar.Section />
+      </App.Sidebar.Tab.Set>
     </>
   );
 }
@@ -142,6 +189,42 @@ function EditorSettings({ name }: { name?: string }) {
           </div>
         </div>
       </div>
+    </App.Sidebar.Section>
+  );
+}
+
+function RemoveBgAction() {
+  const { image } = Editor.Background.useSelectedImage();
+  const onRemove = Editor.Background.useMockDuplicate("Mock Remove BG");
+
+  return (
+    <App.Sidebar.Section divider title="Remove BG" defaultExpanded padding="sm">
+      <Theme.Button
+        fullWidth
+        icon={Theme.Icon.Eraser}
+        disabled={!image?.element?.src}
+        onClick={onRemove}
+      >
+        Mock Remove BG
+      </Theme.Button>
+    </App.Sidebar.Section>
+  );
+}
+
+function ReplaceBgAction() {
+  const { image } = Editor.Background.useSelectedImage();
+  const onReplace = Editor.Background.useMockDuplicate("Mock Replace BG");
+
+  return (
+    <App.Sidebar.Section divider title="Replace BG" defaultExpanded padding="sm">
+      <Theme.Button
+        fullWidth
+        icon={Theme.Icon.Edit}
+        disabled={!image?.element?.src}
+        onClick={onReplace}
+      >
+        Mock Replace BG
+      </Theme.Button>
     </App.Sidebar.Section>
   );
 }
