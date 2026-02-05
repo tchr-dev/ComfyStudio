@@ -1,3 +1,4 @@
+import { Editor } from "~/Editor";
 import { Generation } from "~/Generation";
 import { GlobalState } from "~/GlobalState";
 
@@ -72,6 +73,8 @@ export namespace Session {
 
   export const useCreateDream = () => {
     const createGeneration = Generation.Image.Create.use();
+    const createImage = Editor.Image.Create.useFromURL();
+
     return useCallback(
       async (modifiers?: Generation.Image.Input.Modifiers) => {
         const input = getCurrentInput();
@@ -79,9 +82,17 @@ export namespace Session {
 
         State.get().newCurrentInput();
 
-        return createGeneration({ inputID: input.id, modifiers });
+        return createGeneration({
+          inputID: input.id,
+          modifiers,
+          onSuccess: (images) => {
+            if (images && images.length > 0 && images[0].src) {
+              createImage(images[0].src);
+            }
+          },
+        });
       },
-      [createGeneration]
+      [createGeneration, createImage]
     );
   };
 

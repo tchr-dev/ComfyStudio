@@ -6,7 +6,7 @@
 blue=$(tput setaf 4)
 normal=$(tput sgr0)
 printf "%b" "${blue}Type checking... ${normal}"
-yarn stablestudio-ui build:types
+yarn comfystudio-ui build:types
 
 # Run the lint-staged job in the root package.json
 yarn lint-staged

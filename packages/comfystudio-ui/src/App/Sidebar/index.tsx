@@ -13,44 +13,54 @@ export * from "./Sidebars";
 export type Sidebar = {
   visible: boolean;
   width: number;
-  tab?: Tab.Name;
+  widthMode?: "auto" | "fixed";
+  tab?: string;
 };
 
-export function Sidebar({ position }: Sidebar.Props) {
+export function Sidebar({
+  position,
+  children,
+}: React.PropsWithChildren<Sidebar.Props>) {
   const [sidebar] = Sidebar.use(position);
-  const tabs = Tabs.use(position);
-  const hasTabs = tabs.some((tab) => tab.enabled);
   const isMobileDevice = Theme.useIsMobileDevice();
-  const showing = hasTabs && sidebar.visible && sidebar.width > 300;
-
-  const bar = useMemo(
-    () => (
-      <>
-        <Tab.Buttons position={position} />
-        <Tab position={position} />
-        <Tab.Bottoms position={position} />
-      </>
-    ),
-    [position]
-  );
+  const showing =
+    sidebar.visible &&
+    (sidebar.widthMode === "auto" || sidebar.width > 300);
+  const width =
+    showing
+      ? isMobileDevice
+        ? "100%"
+        : sidebar.widthMode === "auto"
+          ? "fit-content"
+          : sidebar.width
+      : 0;
 
   if (isMobileDevice) return null;
   return (
     <div
-      style={{ width: showing ? (isMobileDevice ? "100%" : sidebar.width) : 0 }}
+      style={{
+        width,
+        maxWidth:
+          position === "left" && sidebar.widthMode === "auto"
+            ? "30vw"
+            : undefined,
+      }}
       className={classes(
         "relative z-[10] min-h-0 shrink-0 border-zinc-700 dark:bg-zinc-900",
+        position === "left" && sidebar.widthMode === "auto"
+          ? "min-w-[72px] overflow-x-auto"
+          : "",
         showing && (position === "left" ? "border-r" : "border-l")
       )}
     >
-      {hasTabs && <Resizer position={position} />}
+      <Resizer position={position} />
       <div
         className={classes(
           "flex h-full min-h-0 shrink grow flex-col",
           !showing && "hidden"
         )}
       >
-        {bar}
+        {children}
       </div>
     </div>
   );
@@ -101,10 +111,10 @@ export namespace Sidebar {
 
   namespace State {
     export const use = GlobalState.create<State>((set) => {
-      const sidebar = { visible: true, width: presetWidth() };
+      // const sidebar = { visible: true, width: presetWidth() };
       return {
-        left: sidebar,
-        right: sidebar,
+        left: { visible: true, width: presetWidth(), widthMode: "auto" },
+        right: { visible: true, width: presetWidth(), widthMode: "fixed" },
 
         setSidebar: (position, setSidebar) =>
           set((state) => ({

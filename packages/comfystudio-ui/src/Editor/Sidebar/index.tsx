@@ -1,7 +1,6 @@
 import { App } from "~/App";
 import { Editor } from "~/Editor";
 import { Generation } from "~/Generation";
-import { Router } from "~/Router";
 import { Theme } from "~/Theme";
 
 const tips = [
@@ -16,7 +15,6 @@ const tips = [
 ];
 
 export function Sidebar() {
-  const location = Router.useLocation();
   const selectedID = Editor.Selection.OnlyOne.use();
   const dreams = Editor.Entities.useType("dream") as Editor.Dream[];
   const { active: activeEditTool } = Editor.EditTool.useActive();

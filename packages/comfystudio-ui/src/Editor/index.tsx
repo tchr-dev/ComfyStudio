@@ -20,6 +20,8 @@ import { Shortcuts } from "./Shortcut";
 import { Sidebar } from "./Sidebar";
 import { Tool, Tools } from "./Tool";
 import { TopBar } from "./TopBar";
+import { ThumbnailStrip } from "~/Dock/Panels/ThumbnailStrip";
+
 
 export function Editor() {
   Shortcuts.use();
@@ -45,6 +47,7 @@ export function Editor() {
           <Canvas>
             <Entities />
           </Canvas>
+          <ThumbnailStrip />
           <Floating />
         </div>
       </>

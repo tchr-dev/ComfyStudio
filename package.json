@@ -25,6 +25,7 @@
     "clean": "yarn workspaces foreach --all --interlaced --verbose --parallel --jobs unlimited run clean && rimraf node_modules"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.1",
     "cross-env": "^7.0.3",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.7",

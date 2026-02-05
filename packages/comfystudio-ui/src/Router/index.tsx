@@ -35,11 +35,7 @@ export namespace Router {
         () =>
           [
             {
-              path: "/generate",
-              element: <Generation />,
-            },
-            {
-              path: "/edit",
+              path: "/",
               element: <Editor />,
             },
             {
@@ -48,7 +44,7 @@ export namespace Router {
             },
             {
               path: "*",
-              element: <ReactRouter.Navigate to={`/generate`} replace />,
+              element: <ReactRouter.Navigate to={`/`} replace />,
             },
           ] as const,
         []

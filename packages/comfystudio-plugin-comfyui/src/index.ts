@@ -46,7 +46,16 @@ type PluginState = {
 };
 
 function getStoredUrl(): string {
-  return localStorage.getItem("comfyui-host-url") || DEFAULT_COMFYUI_URL;
+  const stored = localStorage.getItem("comfyui-host-url");
+  if (!stored) return DEFAULT_COMFYUI_URL;
+
+  // Check for duplicated protocol which indicates a corrupted string
+  // e.g. "http://...http://..."
+  if (stored.indexOf("http") !== stored.lastIndexOf("http")) {
+    return DEFAULT_COMFYUI_URL;
+  }
+
+  return stored;
 }
 
 function getStoredModel(): string {
