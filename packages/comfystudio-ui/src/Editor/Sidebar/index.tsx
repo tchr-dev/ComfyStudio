@@ -17,7 +17,7 @@ const tips = [
 export function Sidebar() {
   const selectedID = Editor.Selection.OnlyOne.use();
   const dreams = Editor.Entities.useType("dream") as Editor.Dream[];
-  const { active: activeEditTool } = Editor.EditTool.useActive();
+  const [activeEditTool] = Editor.Tool.Active.use();
   const { input: sessionInput } = Generation.Image.Session.useCurrentInput();
   const [inputID, setInputID] = useState("");
 
@@ -35,8 +35,8 @@ export function Sidebar() {
     () => dreams.filter(({ id }) => id === selectedID).length > 0,
     [dreams, selectedID]
   );
-  const isRemoveBG = activeEditTool === "remove-bg";
-  const isReplaceBG = activeEditTool === "replace-bg";
+  const isRemoveBG = activeEditTool === "remove-background";
+  const isReplaceBG = activeEditTool === "replace-background";
   const selectedInput = Generation.Image.Input.get(inputID);
   const replaceInputID = selectedInput?.id ?? sessionInput?.id;
   const effectiveInputID = isReplaceBG ? replaceInputID : inputID;

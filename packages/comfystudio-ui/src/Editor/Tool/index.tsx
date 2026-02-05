@@ -9,7 +9,13 @@ import { Sidebar } from "./Sidebar";
 
 export * from "./Tools";
 
-export type Tool = "select" | "hand" | "brush" | "export";
+export type Tool =
+  | "select"
+  | "hand"
+  | "brush"
+  | "export"
+  | "remove-background"
+  | "replace-background";
 
 export function Tool({
   tool,
